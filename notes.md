@@ -1,0 +1,1 @@
+This will be the place where I'll add notes about what I'm learning in CS 240.
