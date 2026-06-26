@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.*;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -11,7 +13,7 @@ public class ChessBoard {
     ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -21,8 +23,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRow()-1][position.getColumn()-1] = piece;
-
+        board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -33,7 +34,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()-1][position.getColumn()-1];
+        return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -42,7 +43,31 @@ public class ChessBoard {
      */
     public void resetBoard() {
         board = new ChessPiece[8][8];
-        //Do I need to delete the memory here?
+        Collection<ChessPiece.PieceType> specialPieces = List.of(
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK);
+
+        ChessPosition blackSide = new ChessPosition(8, 1);
+        for (ChessPiece.PieceType type : specialPieces) {
+            addPiece(blackSide, new ChessPiece(ChessGame.TeamColor.BLACK, type));
+            addPiece(new ChessPosition(7, blackSide.getColumn()), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+            blackSide = new ChessPosition(8, blackSide.getColumn() + 1);
+        }
+
+        ChessPosition whiteSide = new ChessPosition(1, 1);
+        for (ChessPiece.PieceType type : specialPieces) {
+            addPiece(whiteSide, new ChessPiece(ChessGame.TeamColor.WHITE, type));
+            addPiece(new ChessPosition(2, whiteSide.getColumn()), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            whiteSide = new ChessPosition(1, whiteSide.getColumn() + 1);
+        }
+
+
     }
 
     @Override
@@ -65,6 +90,20 @@ public class ChessBoard {
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }
 
