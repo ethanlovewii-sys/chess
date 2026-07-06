@@ -56,27 +56,20 @@ public class ChessGame {
         TeamColor color = piece.getTeamColor();
         Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, startPosition);
         Collection<ChessMove> checkedMoves = new ArrayList<>();
-        //Check if team was in check before the move. if it wasn't, then was when it was removed return null.
-        boolean preMoveCheck = isInCheck(color);
+
+        //Loop through moves and if after the move the team is not in check, add that move to valid moves.
         gameBoard.addPiece(startPosition, null);
-        if(isInCheck(color)){
-            if (!preMoveCheck) return null;
-            //Loop through moves and if after the move the team is not in check, add that move to valid moves.
-            for (ChessMove move : moves){
-                ChessPosition end = move.getEndPosition();
-                ChessPiece tempSavedPiece = gameBoard.getPiece(end);
-                gameBoard.addPiece(end, piece);
-                if (!isInCheck(color)){
-                    checkedMoves.add(move);
-                }
-                gameBoard.addPiece(end, tempSavedPiece);
+        for (ChessMove move : moves){
+            ChessPosition end = move.getEndPosition();
+            ChessPiece tempSavedPiece = gameBoard.getPiece(end);
+            gameBoard.addPiece(end, piece);
+            if (!isInCheck(color)){
+                checkedMoves.add(move);
             }
-            gameBoard.addPiece(startPosition, piece);
-            return checkedMoves;
+            gameBoard.addPiece(end, tempSavedPiece);
         }
         gameBoard.addPiece(startPosition, piece);
-        return moves;
-
+        return checkedMoves;
     }
 
     /**
