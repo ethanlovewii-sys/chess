@@ -76,19 +76,29 @@ public class ChessBoard {
 
         for (int row = 8; row >= 1; row--) {
             for (int col = 1; col <= 8; col++) {
-                ChessPiece piece =
-                        getPiece(new ChessPosition(row, col));
+                ChessPiece piece = getPiece(new ChessPosition(row, col));
 
                 if (piece == null) {
                     sb.append(". ");
                 } else {
-                    sb.append(piece.getPieceType().toString().charAt(0))
-                            .append(" ");
+                    char symbol = switch (piece.getPieceType()) {
+                        case KING -> 'K';
+                        case QUEEN -> 'Q';
+                        case ROOK -> 'R';
+                        case BISHOP -> 'B';
+                        case KNIGHT -> 'N';
+                        case PAWN -> 'P';
+                    };
+
+                    if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        symbol = Character.toLowerCase(symbol);
+                    }
+
+                    sb.append(symbol).append(" ");
                 }
             }
             sb.append("\n");
         }
-
         return sb.toString();
     }
 
