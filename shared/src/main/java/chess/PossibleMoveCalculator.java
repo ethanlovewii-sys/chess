@@ -17,7 +17,7 @@ public class PossibleMoveCalculator {
     }
 
     //Checks if a position is on the board and not taken by another piece.
-    private static boolean isValidPosition(ChessPosition originalPosition, ChessPosition newPosition, ChessBoard board) {
+    public static boolean isValidPosition(ChessPosition originalPosition, ChessPosition newPosition, ChessBoard board) {
         if (newPosition.getRow() < 1 || newPosition.getColumn() < 1 || newPosition.getRow() > 8 || newPosition.getColumn() > 8) {
             return false;
         } else if (board.getPiece(newPosition) != null) {
