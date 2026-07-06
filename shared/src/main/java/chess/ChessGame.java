@@ -83,6 +83,7 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPiece startPiece = gameBoard.getPiece(start);
 
+        //Valid move checks
         if (startPiece == null){
             throw new InvalidMoveException("Piece is null");
         }
@@ -95,12 +96,14 @@ public class ChessGame {
             throw new InvalidMoveException("Move out of turn");
         }
 
+        //Add piece to new position and remove old.
         gameBoard.addPiece(end, startPiece);
         gameBoard.addPiece(start, null);
         if (move.getPromotionPiece() != null){
             gameBoard.addPiece(end, new ChessPiece(color, move.getPromotionPiece()));
         }
 
+        //End teams turn
         if (teamTurn == TeamColor.WHITE) setTeamTurn(TeamColor.BLACK);
         else setTeamTurn(TeamColor.WHITE);
     }
@@ -112,15 +115,16 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //Get the team color kings position
         ChessPosition kingPosition = getKingPosition(teamColor);
 
+        //Loop through the board and find enemy pieces
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition positionToCheck = new ChessPosition(i, j);
                 ChessPiece pieceToCheck = gameBoard.getPiece(positionToCheck);
                 if (pieceToCheck != null && pieceToCheck.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
+                    //Loop through the pieces moves and return true if their end position is the kings position
                     for (ChessMove move : moves) {
                         if (move.getEndPosition().equals(kingPosition)){
                             return true;
@@ -132,6 +136,7 @@ public class ChessGame {
         return false;
     }
 
+    //Helper method that loops through the board to find the king of a given color
     private ChessPosition getKingPosition(TeamColor teamColor) {
         ChessPosition kingPosition = null;
         for (int a = 1; a <= 8; a++) {
@@ -142,6 +147,7 @@ public class ChessGame {
                         possibleKing.getPieceType() == ChessPiece.PieceType.KING &&
                         possibleKing.getTeamColor() == teamColor) {
                     kingPosition = checkPosition;
+                    break;
                 }
             }
             if (kingPosition != null) {
@@ -184,6 +190,7 @@ public class ChessGame {
                 }
             }
         }
+        //net for stalemates
         if (!isInCheck(teamColor)) return false;
         return true;
     }
