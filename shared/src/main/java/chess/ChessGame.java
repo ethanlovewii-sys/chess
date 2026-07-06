@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,7 +51,28 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return ChessPiece.pieceMoves(gameBoard, startPosition);
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+        TeamColor color = piece.getTeamColor();
+        Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> checkedMoves = new ArrayList<>();
+        //Check if team was in check before the move. if it wasn't, then was when it was removed return null.
+        boolean preMoveCheck = isInCheck(color);
+        gameBoard.addPiece(startPosition, null);
+        if(isInCheck(color)){
+            if (!preMoveCheck) return null;
+            //Loop through moves and if after the move the team is not in check, add that move to valid moves.
+            for (ChessMove move : moves){
+                gameBoard.addPiece(move.getEndPosition(), piece);
+                if (!isInCheck(color)){
+                    checkedMoves.add(move);
+                }
+            }
+            gameBoard.addPiece(startPosition, piece);
+            return checkedMoves;
+        }
+        gameBoard.addPiece(startPosition, piece);
+        return moves;
+
     }
 
     /**
@@ -60,7 +82,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
@@ -71,7 +93,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         //Get the team color kings position
-        ChessPosition kingPosition;
+        ChessPosition kingPosition = null;
         for (int a = 1; a <= 8; a++) {
             for (int b = 1; b <= 8; b++) {
                 ChessPosition checkPosition = new ChessPosition(a, b);
@@ -94,11 +116,14 @@ public class ChessGame {
                 ChessPiece pieceToCheck = gameBoard.getPiece(positionToCheck);
                 if (pieceToCheck != null && pieceToCheck.getTeamColor() != teamColor) {
                     for (ChessMove move : ChessPiece.pieceMoves(gameBoard, positionToCheck)) {
-                        if (move.getEndPosition() ==
+                        if (move.getEndPosition() == kingPosition){
+                            return true;
+                        }
                     }
                 }
             }
         }
+        return false;
     }
 
     /**
