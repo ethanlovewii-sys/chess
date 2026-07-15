@@ -1,5 +1,10 @@
 package server.handler;
 
+import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryUserDAO;
+import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 import request.RegisterRequest;
@@ -10,31 +15,19 @@ import server.Exception.BadRequestException;
 import service.UserService;
 
 public class UserHandler {
-    public static void register(@NotNull Context context) {
-        try{
+    public static void register(@NotNull Context context) throws Exception {
             //Convert JSON -> Java object
-            RegisterRequest request = context.bodyAsClass(RegisterRequest.class);
+            RegisterRequest request = new Gson().fromJson(context.body(), RegisterRequest.class);
 
             //Call related service
-            UserService service = new UserService();
+            UserDAO userDAO = new MemoryUserDAO();
+            AuthDAO authDAO = new MemoryAuthDAO();
+
+            UserService service = new UserService(userDAO, authDAO);
             RegisterResult result = service.register(request);
 
             context.status(200);
-            context.json(result);
-
-        } catch (BadRequestException e){
-            context.status(400);
-            context.json(new ErrorResult(e.getMessage()));
-
-        }catch (AlreadyTakenException e){
-            context.status(403);
-            context.json(new ErrorResult(e.getMessage()));
-
-        }catch (Exception e) {
-
-            context.status(500);
-            context.json(new ErrorResult("Error: " + e.getMessage()));
-        }
+            context.result(new Gson().toJson(result));
 
     }
 }
