@@ -23,4 +23,16 @@ public class MemoryGameDAO implements GameDAO{
     public int getID() {
         return gameID;
     }
+
+    public void addPlayer(int oldGameID, String username, ChessGame.TeamColor teamColor) {
+        GameData oldGame = getGame(oldGameID);
+        GameData newgameData = null;
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            newgameData = new GameData(oldGameID, username, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+        }
+        if (teamColor == ChessGame.TeamColor.BLACK) {
+            newgameData = new GameData(oldGameID, oldGame.whiteUsername(), username, oldGame.gameName(), oldGame.game());
+        }
+        games.put(oldGameID, newgameData);
+    }
 }

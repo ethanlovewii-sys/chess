@@ -5,6 +5,7 @@ import dataaccess.*;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import result.CreateGameResult;
 import result.LoginResult;
@@ -31,5 +32,17 @@ public class GameHandler {
         //If reached, send OK status and the register response
         context.status(200);
         context.result(new Gson().toJson(result));
+    }
+
+    public void joinGame(Context context) throws ResponseException {
+        //Convert JSON -> Java object
+        JoinGameRequest request = new Gson().fromJson(context.body(), JoinGameRequest.class);
+        String authToken = context.header("Authorization");
+
+        //Call related service
+         service.joinGame(request, authToken);
+
+        //If reached, send OK status and the register response
+        context.status(200);
     }
 }

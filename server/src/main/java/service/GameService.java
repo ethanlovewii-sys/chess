@@ -1,13 +1,17 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import result.CreateGameResult;
 import server.ResponseException;
+
+import java.util.Objects;
 
 public class GameService {
 
@@ -20,7 +24,6 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
-        System.out.println(authToken);
         AuthData authData = authDAO.getAuthData(authToken);
         if (authData == null) {
             throw new ResponseException("Error: unauthorized", 401);
@@ -32,5 +35,33 @@ public class GameService {
         int gameID = gameDAO.createGame(request.gameName());
 
         return new CreateGameResult(gameID);
+    }
+
+    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException {
+        AuthData authData = authDAO.getAuthData(authToken);
+        if (authData == null) {
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+        if (request.gameID() == null || request.playerColor() == null) {
+            throw new ResponseException("Error: bad request", 400);
+        }
+
+        GameData gameData = gameDAO.getGame(request.gameID());
+
+        if (gameData == null) {
+            throw new ResponseException("Error: bad request", 400);
+        }
+
+        if (request.playerColor().equals(ChessGame.TeamColor.WHITE)) {
+            if (gameData.whiteUsername() != null){
+                throw new  ResponseException("Error: already taken", 403);
+            }
+        }
+        if (request.playerColor().equals(ChessGame.TeamColor.BLACK)) {
+            if (gameData.whiteUsername() != null){
+            throw new  ResponseException("Error: already taken", 403);
+            }
+        }
+        gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
     }
 }
