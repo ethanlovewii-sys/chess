@@ -14,6 +14,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         javalin.post("/user", UserHandler::register);
+        javalin.post("/session", UserHandler::login);
         javalin.delete("/db", UserHandler::clear);
         javalin.exception(ResponseException.class, this::exceptionHandler);
 

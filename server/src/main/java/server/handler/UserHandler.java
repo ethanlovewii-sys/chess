@@ -3,7 +3,9 @@ package server.handler;
 import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.http.Context;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 import server.ResponseException;
 import service.UserService;
@@ -33,5 +35,18 @@ public class UserHandler {
 
         context.status(200);
         context.result();
+    }
+
+    public static void login(Context context) throws DataAccessException, ResponseException {
+        //Convert JSON -> Java object
+        LoginRequest request = new Gson().fromJson(context.body(), LoginRequest.class);
+
+        //Call related service
+        UserService service = new UserService(userDAO, authDAO);
+        LoginResult result = service.login(request);
+
+        //If reached, send OK status and the register response
+        context.status(200);
+        context.result(new Gson().toJson(result));
     }
 }

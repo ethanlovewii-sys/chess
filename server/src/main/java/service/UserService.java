@@ -4,7 +4,9 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.UserData;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 import server.ResponseException;
 
@@ -25,7 +27,6 @@ public class UserService {
         String email = request.email();
         UserData user = userDAO.getUser(username);
         if (user != null){
-            System.out.println("Exception reached");
             throw new ResponseException("Error: already taken", 403);
         }
         if (username == null || password == null || email == null){
@@ -35,11 +36,34 @@ public class UserService {
         String authToken = UUID.randomUUID().toString();
         authDAO.createAuth(authToken, username);
 
-        return new RegisterResult(username, authToken, null);
+        return new RegisterResult(username, authToken);
     }
 
     public void clear(){
         userDAO.deleteAll();
         authDAO.deleteAll();
+    }
+
+    public LoginResult login(LoginRequest request) throws DataAccessException, ResponseException {
+        String username = request.username();
+        String password = request.password();
+
+        UserData user = userDAO.getUser(username);
+
+        if (user == null){
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+        if (username == null || password == null){
+            throw new ResponseException("Error: bad request", 400);
+        }
+        if (!user.password().equals(password)){
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+
+
+        String authToken = UUID.randomUUID().toString();
+        authDAO.createAuth(authToken, username);
+
+        return new LoginResult(username, authToken);
     }
 }
