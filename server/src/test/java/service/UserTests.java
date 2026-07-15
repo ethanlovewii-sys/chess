@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.GameData;
 import model.UserData;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import passoff.model.TestAuthResult;
 import passoff.model.TestUser;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
@@ -35,6 +37,7 @@ public class UserTests {
 
     RegisterResult existingUser;
     String authToken;
+    int existingGameID;
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
@@ -42,6 +45,9 @@ public class UserTests {
         //one user already logged in
         RegisterResult existingUser = userService.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
         authToken = existingUser.authToken();
+
+        CreateGameResult existingGame = gameService.createGame(new CreateGameRequest("ExistingGame"), authToken);
+        existingGameID = existingGame.gameID();
     }
 
     @Test
@@ -108,6 +114,23 @@ public class UserTests {
     void unauthorizedCreate() {
         assertThrows(ResponseException.class, () -> {
             gameService.createGame(new CreateGameRequest("newGameName"), "5235234534");
+        });
+    }
+
+    @Test
+    void normalJoinGame() throws ResponseException, DataAccessException {
+        RegisterResult newUser = userService.register(new RegisterRequest("NewUser", "NewPassword", "new@mail.com"));
+        gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, existingGameID), newUser.authToken());
+
+        GameData gameData = gameDAO.getGame(existingGameID);
+        assertEquals(gameData.whiteUsername(), "NewUser");
+        Assertions.assertNull(gameData.blackUsername());
+    }
+
+    @Test
+    void joinNonexistentGame() throws ResponseException, DataAccessException {
+        assertThrows(ResponseException.class, () -> {
+            gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, 5481), authToken);
         });
     }
 }
