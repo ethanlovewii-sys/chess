@@ -13,7 +13,14 @@ public class MemoryGameDAO implements GameDAO{
     public int createGame(String gameName) {
         GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
         games.put(gameID, gameData);
-        gameID ++;
+        return gameID++;
+    }
+
+    public GameData getGame(int gameID) {
+        return games.get(gameID);
+    }
+
+    public int getID() {
         return gameID;
     }
 }
