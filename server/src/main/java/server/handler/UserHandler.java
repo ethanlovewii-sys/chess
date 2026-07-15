@@ -13,16 +13,17 @@ import service.UserService;
 
 public class UserHandler {
 
-    //Initialize memory
-    private static final UserDAO userDAO = new MemoryUserDAO();
-    private static final AuthDAO authDAO = new MemoryAuthDAO();
+    private final UserService service;
 
-    public static void register(Context context) throws ResponseException, DataAccessException {
+    public UserHandler(UserDAO userDAO, AuthDAO authDAO) {
+        service = new UserService(userDAO, authDAO);
+    }
+
+    public void register(Context context) throws ResponseException, DataAccessException {
         //Convert JSON -> Java object
         RegisterRequest request = new Gson().fromJson(context.body(), RegisterRequest.class);
 
         //Call related service
-        UserService service = new UserService(userDAO, authDAO);
         RegisterResult result = service.register(request);
 
         //If reached, send OK status and the register response
@@ -30,20 +31,18 @@ public class UserHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public static void clear(Context context) {
-        UserService service = new UserService(userDAO, authDAO);
+    public void clear(Context context) {
         service.clear();
 
         context.status(200);
         context.result();
     }
 
-    public static void login(Context context) throws DataAccessException, ResponseException {
+    public  void login(Context context) throws DataAccessException, ResponseException {
         //Convert JSON -> Java object
         LoginRequest request = new Gson().fromJson(context.body(), LoginRequest.class);
 
         //Call related service
-        UserService service = new UserService(userDAO, authDAO);
         LoginResult result = service.login(request);
 
         //If reached, send OK status and the register response
@@ -51,11 +50,10 @@ public class UserHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public static void logout(Context context) throws DataAccessException, ResponseException  {
+    public  void logout(Context context) throws DataAccessException, ResponseException  {
         String authToken = context.header("Authorization");
 
         //Call related service
-        UserService service = new UserService(userDAO, authDAO);
         service.logout(authToken);
 
         //If reached, send OK status

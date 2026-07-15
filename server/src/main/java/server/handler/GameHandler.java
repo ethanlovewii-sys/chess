@@ -1,4 +1,35 @@
 package server.handler;
 
+import com.google.gson.Gson;
+import dataaccess.*;
+import io.javalin.http.Context;
+import org.jetbrains.annotations.NotNull;
+import request.CreateGameRequest;
+import request.LoginRequest;
+import result.CreateGameResult;
+import result.LoginResult;
+import server.ResponseException;
+import service.GameService;
+import service.UserService;
+
 public class GameHandler {
+
+    private final GameService service;
+
+    public GameHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
+        service = new GameService(gameDAO, authDAO);
+    }
+
+    public void createGame(Context context) throws ResponseException {
+        //Convert JSON -> Java object
+        CreateGameRequest request = new Gson().fromJson(context.body(), CreateGameRequest.class);
+        String authToken = context.header("Authorization");
+
+        //Call related service
+        CreateGameResult result = service.createGame(request, authToken);
+
+        //If reached, send OK status and the register response
+        context.status(200);
+        context.result(new Gson().toJson(result));
+    }
 }
