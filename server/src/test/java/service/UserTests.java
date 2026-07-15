@@ -10,6 +10,7 @@ import passoff.model.TestUser;
 import request.RegisterRequest;
 import result.RegisterResult;
 import server.Exception.AlreadyTakenException;
+import server.ResponseException;
 
 import java.net.HttpURLConnection;
 
@@ -37,7 +38,7 @@ public class UserTests {
         RegisterRequest newUser = new RegisterRequest("NewUser", "NewUserPassword", "nu@mail.com");
         service.register(newUser);
 
-        assertThrows(AlreadyTakenException.class, () -> {
+        assertThrows(ResponseException.class, () -> {
             service.register(newUser);
         });
     }

@@ -10,4 +10,8 @@ public class MemoryAuthDAO implements AuthDAO{
     public void createAuth(String authToken, String username) {
         auths.add(new AuthData(authToken, username));
     }
+
+    public void deleteAll() {
+        auths.clear();
+    }
 }
