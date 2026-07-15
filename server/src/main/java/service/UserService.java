@@ -3,6 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import dataaccess.AuthDAO;
+import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
 import request.RegisterRequest;
@@ -60,10 +62,19 @@ public class UserService {
             throw new ResponseException("Error: unauthorized", 401);
         }
 
-
         String authToken = UUID.randomUUID().toString();
         authDAO.createAuth(authToken, username);
 
         return new LoginResult(username, authToken);
+    }
+
+    public void logout(String authToken) throws ResponseException {
+        AuthData authData = authDAO.getAuthData(authToken);
+
+        if (authData == null){
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+
+        authDAO.deleteAuth(authToken);
     }
 }

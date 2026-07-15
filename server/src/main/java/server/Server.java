@@ -15,6 +15,7 @@ public class Server {
 
         javalin.post("/user", UserHandler::register);
         javalin.post("/session", UserHandler::login);
+        javalin.delete("/session", UserHandler::logout);
         javalin.delete("/db", UserHandler::clear);
         javalin.exception(ResponseException.class, this::exceptionHandler);
 

@@ -3,6 +3,7 @@ package server.handler;
 import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.http.Context;
+import org.jetbrains.annotations.NotNull;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -48,5 +49,16 @@ public class UserHandler {
         //If reached, send OK status and the register response
         context.status(200);
         context.result(new Gson().toJson(result));
+    }
+
+    public static void logout(Context context) throws DataAccessException, ResponseException  {
+        String authToken = context.header("Authorization");
+
+        //Call related service
+        UserService service = new UserService(userDAO, authDAO);
+        service.logout(authToken);
+
+        //If reached, send OK status
+        context.status(200);
     }
 }
