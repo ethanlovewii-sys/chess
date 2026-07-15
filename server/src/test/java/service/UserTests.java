@@ -16,6 +16,7 @@ import server.Exception.AlreadyTakenException;
 import server.ResponseException;
 
 import java.net.HttpURLConnection;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,11 +28,15 @@ public class UserTests {
 
     UserService service = new UserService(userDAO, authDAO);
 
+    RegisterResult existingUser;
+    String authToken;
+
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
         service.clear();
         //one user already logged in
-        service.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
+        RegisterResult existingUser = service.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
+        authToken = existingUser.authToken();
     }
 
     @Test
@@ -59,12 +64,29 @@ public class UserTests {
         LoginResult loggedInUser = service.login(new LoginRequest("ExistingUser","existingUserPassword"));
         assertEquals("ExistingUser", loggedInUser.username());
         Assertions.assertNotNull(loggedInUser.authToken());
+        Assertions.assertNotNull(authDAO.getAuthData(loggedInUser.authToken()));
+        Assertions.assertNotNull(userDAO.getUser(loggedInUser.username()));
     }
 
     @Test
     void badPasswordLogin() {
         assertThrows(ResponseException.class, () -> {
             service.login(new LoginRequest("ExistingUser","BADPASSWORD"));
+        });
+    }
+
+    @Test
+    void normalLogout() throws ResponseException, DataAccessException {
+        service.logout(authToken);
+        Assertions.assertNull(authDAO.getAuthData(authToken));
+        Assertions.assertNotNull(userDAO.getUser("ExistingUser"));
+    }
+
+    @Test
+    void alreadyLoggedOut() throws ResponseException, DataAccessException {
+        service.logout(authToken);
+        assertThrows(ResponseException.class, () -> {
+            service.logout(authToken);
         });
     }
 }
