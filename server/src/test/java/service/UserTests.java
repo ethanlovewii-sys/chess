@@ -15,6 +15,7 @@ import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
 import server.Exception.AlreadyTakenException;
@@ -131,6 +132,26 @@ public class UserTests {
     void joinNonexistentGame() throws ResponseException, DataAccessException {
         assertThrows(ResponseException.class, () -> {
             gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, 5481), authToken);
+        });
+    }
+
+    @Test
+    void normalListGames() throws ResponseException, DataAccessException {
+        gameService.createGame(new CreateGameRequest("Game2"), authToken);
+        gameService.createGame(new CreateGameRequest("Game3"), authToken);
+        gameService.createGame(new CreateGameRequest("Game4"), authToken);
+        ListGamesResult games =  gameService.listGames(authToken);
+        assertEquals(4, games.games().size());
+        assertEquals("Game2", games.games().get(1).gameName());
+    }
+
+    @Test
+    void unathorizedListGames() throws ResponseException, DataAccessException {
+        gameService.createGame(new CreateGameRequest("Game2"), authToken);
+        gameService.createGame(new CreateGameRequest("Game3"), authToken);
+        gameService.createGame(new CreateGameRequest("Game4"), authToken);
+        assertThrows(ResponseException.class, () -> {
+            gameService.listGames("5498198");
         });
     }
 }
