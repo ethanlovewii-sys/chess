@@ -31,13 +31,6 @@ public class UserHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public void clear(Context context) {
-        service.clear();
-
-        context.status(200);
-        context.result();
-    }
-
     public  void login(Context context) throws DataAccessException, ResponseException {
         //Convert JSON -> Java object
         LoginRequest request = new Gson().fromJson(context.body(), LoginRequest.class);

@@ -9,6 +9,7 @@ import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import server.ResponseException;
 
 import java.util.Objects;
@@ -17,10 +18,12 @@ public class GameService {
 
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
+    private final UserDAO userDAO;
 
-    public GameService(GameDAO gameDAO, AuthDAO authDAO) {
+    public GameService(GameDAO gameDAO, AuthDAO authDAO, UserDAO userDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
+        this.userDAO = userDAO;
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
@@ -58,10 +61,25 @@ public class GameService {
             }
         }
         if (request.playerColor().equals(ChessGame.TeamColor.BLACK)) {
-            if (gameData.whiteUsername() != null){
+            if (gameData.blackUsername() != null){
             throw new  ResponseException("Error: already taken", 403);
             }
         }
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
+    }
+
+    public ListGamesResult listGames(String authToken) throws ResponseException {
+        AuthData authData = authDAO.getAuthData(authToken);
+        if (authData == null) {
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+
+        return(new ListGamesResult(gameDAO.listGames()));
+    }
+
+    public void clear() {
+        userDAO.deleteAll();
+        authDAO.deleteAll();
+        gameDAO.deleteAll();
     }
 }

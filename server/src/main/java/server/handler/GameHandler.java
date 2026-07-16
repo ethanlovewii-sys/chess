@@ -8,6 +8,7 @@ import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.LoginRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import result.LoginResult;
 import server.ResponseException;
 import service.GameService;
@@ -18,7 +19,7 @@ public class GameHandler {
     private final GameService service;
 
     public GameHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
-        service = new GameService(gameDAO, authDAO);
+        service = new GameService(gameDAO, authDAO, userDAO);
     }
 
     public void createGame(Context context) throws ResponseException {
@@ -43,6 +44,23 @@ public class GameHandler {
          service.joinGame(request, authToken);
 
         //If reached, send OK status and the register response
+        context.status(200);
+    }
+
+    public void listGames(Context context) throws ResponseException {
+        //Convert JSON -> Java object
+        String authToken = context.header("Authorization");
+
+        //Call related service
+        ListGamesResult result = service.listGames(authToken);
+
+        //If reached, send OK status and the register response
+        context.status(200);
+        context.result(new Gson().toJson(result));
+    }
+
+    public void clear(Context context) {
+        service.clear();
         context.status(200);
     }
 }

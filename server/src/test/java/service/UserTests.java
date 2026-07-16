@@ -33,7 +33,7 @@ public class UserTests {
     GameDAO gameDAO = new MemoryGameDAO();
 
     UserService userService = new UserService(userDAO, authDAO);
-    GameService gameService = new GameService(gameDAO, authDAO);
+    GameService gameService = new GameService(gameDAO, authDAO, userDAO);
 
     RegisterResult existingUser;
     String authToken;
@@ -41,7 +41,7 @@ public class UserTests {
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
-        userService.clear();
+        gameService.clear();
         //one user already logged in
         RegisterResult existingUser = userService.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
         authToken = existingUser.authToken();
@@ -106,7 +106,7 @@ public class UserTests {
         CreateGameResult result = gameService.createGame(new CreateGameRequest("newGameName"), authToken);
         Assertions.assertNotNull(result.gameID());
         GameData gameData = (GameData) gameDAO.getGame(result.gameID());
-        assertEquals(gameData.gameName(), "newGameName");
+        assertEquals("newGameName", gameData.gameName());
         Assertions.assertNull(gameData.whiteUsername());
     }
 
@@ -123,7 +123,7 @@ public class UserTests {
         gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, existingGameID), newUser.authToken());
 
         GameData gameData = gameDAO.getGame(existingGameID);
-        assertEquals(gameData.whiteUsername(), "NewUser");
+        assertEquals("NewUser", gameData.whiteUsername());
         Assertions.assertNull(gameData.blackUsername());
     }
 

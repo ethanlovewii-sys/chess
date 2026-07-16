@@ -41,22 +41,18 @@ public class UserService {
         return new RegisterResult(username, authToken);
     }
 
-    public void clear(){
-        userDAO.deleteAll();
-        authDAO.deleteAll();
-    }
-
     public LoginResult login(LoginRequest request) throws DataAccessException, ResponseException {
         String username = request.username();
         String password = request.password();
+
+        if (username == null || password == null){
+            throw new ResponseException("Error: bad request", 400);
+        }
 
         UserData user = userDAO.getUser(username);
 
         if (user == null){
             throw new ResponseException("Error: unauthorized", 401);
-        }
-        if (username == null || password == null){
-            throw new ResponseException("Error: bad request", 400);
         }
         if (!user.password().equals(password)){
             throw new ResponseException("Error: unauthorized", 401);
