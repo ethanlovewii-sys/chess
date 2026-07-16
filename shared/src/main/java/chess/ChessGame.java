@@ -59,11 +59,11 @@ public class ChessGame {
 
         //Loop through moves and if after the move the team is not in check, add that move to valid moves.
         gameBoard.addPiece(startPosition, null);
-        for (ChessMove move : moves){
+        for (ChessMove move : moves) {
             ChessPosition end = move.getEndPosition();
             ChessPiece tempSavedPiece = gameBoard.getPiece(end);
             gameBoard.addPiece(end, piece);
-            if (!isInCheck(color)){
+            if (!isInCheck(color)) {
                 checkedMoves.add(move);
             }
             gameBoard.addPiece(end, tempSavedPiece);
@@ -84,28 +84,31 @@ public class ChessGame {
         ChessPiece startPiece = gameBoard.getPiece(start);
 
         //Valid move checks
-        if (startPiece == null){
+        if (startPiece == null) {
             throw new InvalidMoveException("Piece is null");
         }
         TeamColor color = startPiece.getTeamColor();
 
-        if (!validMoves(start).contains(move)){
+        if (!validMoves(start).contains(move)) {
             throw new InvalidMoveException("Illegal move");
         }
-        if (color != teamTurn){
+        if (color != teamTurn) {
             throw new InvalidMoveException("Move out of turn");
         }
 
         //Add piece to new position and remove old.
         gameBoard.addPiece(end, startPiece);
         gameBoard.addPiece(start, null);
-        if (move.getPromotionPiece() != null){
+        if (move.getPromotionPiece() != null) {
             gameBoard.addPiece(end, new ChessPiece(color, move.getPromotionPiece()));
         }
 
         //End teams turn
-        if (teamTurn == TeamColor.WHITE) setTeamTurn(TeamColor.BLACK);
-        else setTeamTurn(TeamColor.WHITE);
+        if (teamTurn == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
@@ -126,7 +129,7 @@ public class ChessGame {
                     Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
                     //Loop through the pieces moves and return true if their end position is the kings position
                     for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPosition)){
+                        if (move.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                     }
@@ -179,7 +182,7 @@ public class ChessGame {
                         ChessPiece tempSavedPiece = gameBoard.getPiece(end);
                         gameBoard.addPiece(end, heldPiece);
                         //If any of them fix the check, return false
-                        if (!isInCheck(teamColor)){
+                        if (!isInCheck(teamColor)) {
                             gameBoard.addPiece(end, tempSavedPiece);
                             gameBoard.addPiece(positionToCheck, heldPiece);
                             return false;
@@ -191,7 +194,9 @@ public class ChessGame {
             }
         }
         //net for stalemates
-        if (!isInCheck(teamColor)) return false;
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
         return true;
     }
 
@@ -203,7 +208,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(isInCheckmate(teamColor)) return false;
+        if (isInCheckmate(teamColor)) {
+            return false;
+        }
         //Loop through the board and find the teams pieces
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
@@ -211,10 +218,12 @@ public class ChessGame {
                 ChessPiece pieceToCheck = gameBoard.getPiece(positionToCheck);
                 if (pieceToCheck != null && pieceToCheck.getTeamColor() == teamColor) {
                     //If a move is found return false
-                    if (!validMoves(positionToCheck).isEmpty()) return false;
+                    if (!validMoves(positionToCheck).isEmpty()) {
+                        return false;
                     }
                 }
             }
+        }
         return true;
     }
 
