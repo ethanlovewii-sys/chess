@@ -12,8 +12,6 @@ import result.CreateGameResult;
 import result.ListGamesResult;
 import server.ResponseException;
 
-import java.util.Objects;
-
 public class GameService {
 
     private final GameDAO gameDAO;
@@ -56,13 +54,13 @@ public class GameService {
         }
 
         if (request.playerColor().equals(ChessGame.TeamColor.WHITE)) {
-            if (gameData.whiteUsername() != null){
-                throw new  ResponseException("Error: already taken", 403);
+            if (gameData.whiteUsername() != null) {
+                throw new ResponseException("Error: already taken", 403);
             }
         }
         if (request.playerColor().equals(ChessGame.TeamColor.BLACK)) {
-            if (gameData.blackUsername() != null){
-            throw new  ResponseException("Error: already taken", 403);
+            if (gameData.blackUsername() != null) {
+                throw new ResponseException("Error: already taken", 403);
             }
         }
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
@@ -74,7 +72,7 @@ public class GameService {
             throw new ResponseException("Error: unauthorized", 401);
         }
 
-        return(new ListGamesResult(gameDAO.listGames()));
+        return (new ListGamesResult(gameDAO.listGames()));
     }
 
     public void clear() {

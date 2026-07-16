@@ -3,16 +3,12 @@ package server.handler;
 import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
-import request.LoginRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
-import result.LoginResult;
 import server.ResponseException;
 import service.GameService;
-import service.UserService;
 
 public class GameHandler {
 
@@ -41,7 +37,7 @@ public class GameHandler {
         String authToken = context.header("Authorization");
 
         //Call related service
-         service.joinGame(request, authToken);
+        service.joinGame(request, authToken);
 
         //If reached, send OK status and the register response
         context.status(200);

@@ -11,12 +11,14 @@ import io.javalin.http.Context;
 public class Server {
 
     private final Javalin javalin;
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
+        //Initializing memory and feeding them to the handlers
+        UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
 
         UserHandler userHandler = new UserHandler(userDAO, authDAO);
         GameHandler gameHandler = new GameHandler(userDAO, authDAO, gameDAO);
@@ -30,8 +32,9 @@ public class Server {
         javalin.get("/game", gameHandler::listGames);
 
         javalin.delete("/db", gameHandler::clear);
-        javalin.exception(ResponseException.class, this::exceptionHandler);
 
+        //Catches exceptions and has the exception handler format them
+        javalin.exception(ResponseException.class, this::exceptionHandler);
     }
 
     private void exceptionHandler(ResponseException ex, Context context) {
@@ -47,5 +50,4 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-
 }

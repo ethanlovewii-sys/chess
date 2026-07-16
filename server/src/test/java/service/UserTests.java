@@ -1,28 +1,15 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
-import model.GameData;
 import model.UserData;
-import org.eclipse.jetty.util.log.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import passoff.model.TestAuthResult;
-import passoff.model.TestUser;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
-import result.CreateGameResult;
-import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
-import server.Exception.AlreadyTakenException;
 import server.ResponseException;
-
-import java.net.HttpURLConnection;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,23 +23,17 @@ public class UserTests {
     UserService userService = new UserService(userDAO, authDAO);
     GameService gameService = new GameService(gameDAO, authDAO, userDAO);
 
-    RegisterResult existingUser;
     String authToken;
-    int existingGameID;
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
         gameService.clear();
-        //one user already logged in
         RegisterResult existingUser = userService.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
         authToken = existingUser.authToken();
-
-        CreateGameResult existingGame = gameService.createGame(new CreateGameRequest("ExistingGame"), authToken);
-        existingGameID = existingGame.gameID();
     }
 
     @Test
-    void register() throws Exception{
+    void register() throws Exception {
         RegisterRequest newUser = new RegisterRequest("NewUser", "NewUserPassword", "nu@mail.com");
         userService.register(newUser);
         UserData userFound = userDAO.getUser("NewUser");
@@ -72,8 +53,8 @@ public class UserTests {
     }
 
     @Test
-    void normalLogin() throws Exception{
-        LoginResult loggedInUser = userService.login(new LoginRequest("ExistingUser","existingUserPassword"));
+    void normalLogin() throws Exception {
+        LoginResult loggedInUser = userService.login(new LoginRequest("ExistingUser", "existingUserPassword"));
         assertEquals("ExistingUser", loggedInUser.username());
         Assertions.assertNotNull(loggedInUser.authToken());
         Assertions.assertNotNull(authDAO.getAuthData(loggedInUser.authToken()));
@@ -83,7 +64,7 @@ public class UserTests {
     @Test
     void badPasswordLogin() {
         assertThrows(ResponseException.class, () -> {
-            userService.login(new LoginRequest("ExistingUser","BADPASSWORD"));
+            userService.login(new LoginRequest("ExistingUser", "BADPASSWORD"));
         });
     }
 
@@ -95,63 +76,10 @@ public class UserTests {
     }
 
     @Test
-    void alreadyLoggedOut() throws ResponseException, DataAccessException {
+    void alreadyLoggedOut() throws ResponseException {
         userService.logout(authToken);
         assertThrows(ResponseException.class, () -> {
             userService.logout(authToken);
-        });
-    }
-
-    @Test
-    void normalCreateGame() throws ResponseException {
-        CreateGameResult result = gameService.createGame(new CreateGameRequest("newGameName"), authToken);
-        Assertions.assertNotNull(result.gameID());
-        GameData gameData = (GameData) gameDAO.getGame(result.gameID());
-        assertEquals("newGameName", gameData.gameName());
-        Assertions.assertNull(gameData.whiteUsername());
-    }
-
-    @Test
-    void unauthorizedCreate() {
-        assertThrows(ResponseException.class, () -> {
-            gameService.createGame(new CreateGameRequest("newGameName"), "5235234534");
-        });
-    }
-
-    @Test
-    void normalJoinGame() throws ResponseException, DataAccessException {
-        RegisterResult newUser = userService.register(new RegisterRequest("NewUser", "NewPassword", "new@mail.com"));
-        gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, existingGameID), newUser.authToken());
-
-        GameData gameData = gameDAO.getGame(existingGameID);
-        assertEquals("NewUser", gameData.whiteUsername());
-        Assertions.assertNull(gameData.blackUsername());
-    }
-
-    @Test
-    void joinNonexistentGame() throws ResponseException, DataAccessException {
-        assertThrows(ResponseException.class, () -> {
-            gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, 5481), authToken);
-        });
-    }
-
-    @Test
-    void normalListGames() throws ResponseException, DataAccessException {
-        gameService.createGame(new CreateGameRequest("Game2"), authToken);
-        gameService.createGame(new CreateGameRequest("Game3"), authToken);
-        gameService.createGame(new CreateGameRequest("Game4"), authToken);
-        ListGamesResult games =  gameService.listGames(authToken);
-        assertEquals(4, games.games().size());
-        assertEquals("Game2", games.games().get(1).gameName());
-    }
-
-    @Test
-    void unathorizedListGames() throws ResponseException, DataAccessException {
-        gameService.createGame(new CreateGameRequest("Game2"), authToken);
-        gameService.createGame(new CreateGameRequest("Game3"), authToken);
-        gameService.createGame(new CreateGameRequest("Game4"), authToken);
-        assertThrows(ResponseException.class, () -> {
-            gameService.listGames("5498198");
         });
     }
 }

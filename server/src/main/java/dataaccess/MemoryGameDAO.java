@@ -2,13 +2,11 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
-import model.UserData;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MemoryGameDAO implements GameDAO{
+public class MemoryGameDAO implements GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
     int gameID = 1;
 
