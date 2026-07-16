@@ -120,24 +120,33 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = getKingPosition(teamColor);
 
-        //Loop through the board and find enemy pieces
+        //Loop through board
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition positionToCheck = new ChessPosition(i, j);
                 ChessPiece pieceToCheck = gameBoard.getPiece(positionToCheck);
-                if (pieceToCheck != null && pieceToCheck.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
-                    //Loop through the pieces moves and return true if their end position is the kings position
-                    for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
+
+                //Only include enemy pieces
+                if (pieceToCheck == null) {
+                    continue;
+                }
+                if (pieceToCheck.getTeamColor() == teamColor) {
+                    continue;
+                }
+
+                //Loop through enemy piece's moves returning true if it could take the king
+                Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
+                for (ChessMove move : moves) {
+                    if (move.getEndPosition().equals(kingPosition)) {
+                        return true;
                     }
                 }
             }
         }
+
         return false;
     }
+
 
     //Helper method that loops through the board to find the king of a given color
     private ChessPosition getKingPosition(TeamColor teamColor) {
@@ -172,25 +181,29 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition positionToCheck = new ChessPosition(i, j);
                 ChessPiece pieceToCheck = gameBoard.getPiece(positionToCheck);
-                if (pieceToCheck != null && pieceToCheck.getTeamColor() == teamColor) {
-                    //Loop through its moves and simulate them
-                    Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
-                    ChessPiece heldPiece = gameBoard.getPiece(positionToCheck);
-                    gameBoard.addPiece(positionToCheck, null);
-                    for (ChessMove move : moves) {
-                        ChessPosition end = move.getEndPosition();
-                        ChessPiece tempSavedPiece = gameBoard.getPiece(end);
-                        gameBoard.addPiece(end, heldPiece);
-                        //If any of them fix the check, return false
-                        if (!isInCheck(teamColor)) {
-                            gameBoard.addPiece(end, tempSavedPiece);
-                            gameBoard.addPiece(positionToCheck, heldPiece);
-                            return false;
-                        }
-                        gameBoard.addPiece(end, tempSavedPiece);
-                    }
-                    gameBoard.addPiece(positionToCheck, heldPiece);
+                if (pieceToCheck == null){
+                    continue;
                 }
+                if (pieceToCheck.getTeamColor() != teamColor) {
+                    continue;
+                }
+                //Loop through its moves and simulate them
+                Collection<ChessMove> moves = ChessPiece.pieceMoves(gameBoard, positionToCheck);
+                ChessPiece heldPiece = gameBoard.getPiece(positionToCheck);
+                gameBoard.addPiece(positionToCheck, null);
+                for (ChessMove move : moves) {
+                    ChessPosition end = move.getEndPosition();
+                    ChessPiece tempSavedPiece = gameBoard.getPiece(end);
+                    gameBoard.addPiece(end, heldPiece);
+                    //If any of them fix the check, return false
+                    if (!isInCheck(teamColor)) {
+                        gameBoard.addPiece(end, tempSavedPiece);
+                        gameBoard.addPiece(positionToCheck, heldPiece);
+                        return false;
+                    }
+                    gameBoard.addPiece(end, tempSavedPiece);
+                }
+                gameBoard.addPiece(positionToCheck, heldPiece);
             }
         }
         //net for stalemates
