@@ -25,7 +25,7 @@ public class GameService {
         this.userDAO = userDAO;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException, DataAccessException {
         AuthData authData = authDAO.getAuthData(authToken);
         if (authData == null) {
             throw new ResponseException("Error: unauthorized", 401);

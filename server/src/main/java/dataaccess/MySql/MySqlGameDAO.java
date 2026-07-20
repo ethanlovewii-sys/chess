@@ -14,14 +14,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 public class MySqlGameDAO extends MySqlParent implements GameDAO {
+
+    public MySqlGameDAO() throws ResponseException, DataAccessException {
+        configureDatabase();
+    }
+
     public int createGame(String gameName) throws ResponseException, DataAccessException {
+        if (gameName == null || gameName.isEmpty()) {
+            throw new ResponseException("Must provide a game name", 400);
+        }
         var statement = """
         INSERT INTO games
-        (gameID, whiteUsername, blackUsername, gameName, gameState)
-         VALUES (?, ?, ?, ?, ?)
+        (whiteUsername, blackUsername, gameName, gameState)
+         VALUES (?, ?, ?, ?)
         """;
         return executeUpdate(statement,  null, null, gameName, new Gson().toJson( new ChessGame()));
     }

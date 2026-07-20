@@ -18,7 +18,7 @@ public class GameHandler {
         service = new GameService(gameDAO, authDAO, userDAO);
     }
 
-    public void createGame(Context context) throws ResponseException {
+    public void createGame(Context context) throws ResponseException, DataAccessException {
         //Convert JSON -> Java object
         CreateGameRequest request = new Gson().fromJson(context.body(), CreateGameRequest.class);
         String authToken = context.header("Authorization");

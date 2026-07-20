@@ -43,7 +43,7 @@ public class GameTests {
     }
 
     @Test
-    void normalCreateGame() throws ResponseException {
+    void normalCreateGame() throws ResponseException, DataAccessException {
         CreateGameResult result = gameService.createGame(new CreateGameRequest("newGameName"), authToken);
         GameData gameData = gameDAO.getGame(result.gameID());
         assertEquals("newGameName", gameData.gameName());
@@ -75,7 +75,7 @@ public class GameTests {
     }
 
     @Test
-    void normalListGames() throws ResponseException {
+    void normalListGames() throws ResponseException, DataAccessException {
         gameService.createGame(new CreateGameRequest("Game2"), authToken);
         gameService.createGame(new CreateGameRequest("Game3"), authToken);
         gameService.createGame(new CreateGameRequest("Game4"), authToken);
@@ -85,7 +85,7 @@ public class GameTests {
     }
 
     @Test
-    void unauthorizedListGames() throws ResponseException {
+    void unauthorizedListGames() throws ResponseException, DataAccessException {
         gameService.createGame(new CreateGameRequest("Game2"), authToken);
         gameService.createGame(new CreateGameRequest("Game3"), authToken);
         gameService.createGame(new CreateGameRequest("Game4"), authToken);
