@@ -1,0 +1,83 @@
+package dataaccess.MySql;
+
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import model.AuthData;
+import server.ResponseException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
+
+    public MySqlAuthDAO() throws ResponseException, DataAccessException {
+        configureDatabase();
+    }
+
+    public void createAuth(String authToken, String username) throws ResponseException, DataAccessException {
+        var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
+        executeUpdate(statement, username, authToken);
+    }
+
+    public void deleteAll() throws ResponseException, DataAccessException {
+        var statement = "TRUNCATE auth";
+        executeUpdate(statement);
+    }
+
+    public AuthData getAuthData(String authToken) throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM auth WHERE authToken = ?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 400);
+        }
+        throw new ResponseException("Error: unauthorized", 401);
+    }
+
+    public void deleteAuth(String authToken) throws ResponseException, DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken = ?";
+        int rowsAffected = executeUpdate(statement, authToken);
+        if (rowsAffected == 0) {
+            throw new ResponseException("Error: unauthorized", 401);
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` VARCHAR(255) NOT NULL,
+              `username` VARCHAR(255) NOT NULL,
+              PRIMARY KEY (`authToken`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var authToken = rs.getString("authToken");
+        return new AuthData(authToken, username);
+    }
+
+    @Override
+    protected String[] getCreateStatements() {
+        return new String[]{
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` VARCHAR(255) NOT NULL,
+              `username` VARCHAR(255) NOT NULL,
+              PRIMARY KEY (`authToken`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+        };
+    }
+}
