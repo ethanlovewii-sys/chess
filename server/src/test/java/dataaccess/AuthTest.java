@@ -1,0 +1,91 @@
+package dataaccess;
+
+import dataaccess.MySql.MySqlAuthDAO;
+import model.AuthData;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import server.ResponseException;
+import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class AuthTest {
+
+    AuthDAO authDAO = new MySqlAuthDAO();
+
+    String authToken =  UUID.randomUUID().toString();
+    String username = "username";
+
+    public AuthTest() throws ResponseException, DataAccessException {
+    }
+
+    @BeforeEach
+    void setUp() throws ResponseException, DataAccessException {
+        authDAO.deleteAll();
+    }
+
+    @Test
+    public void normalCreateAuth() throws ResponseException, DataAccessException {
+        authDAO.createAuth(authToken, username);
+        AuthData authData = authDAO.getAuthData(authToken);
+        Assertions.assertNotNull(authData);
+        assertEquals(username, authData.username());
+    }
+
+    @Test
+    public void badCreateAuth() {
+        assertThrows(ResponseException.class, () -> {
+            authDAO.createAuth(authToken, null);
+        });
+    }
+
+    @Test
+    public void normalGetAuth() throws ResponseException, DataAccessException {
+        authDAO.createAuth(authToken, username);
+        AuthData authData = authDAO.getAuthData(authToken);
+        Assertions.assertNotNull(authData);
+        assertEquals(username, authData.username());
+        assertEquals(authToken, authData.authToken());
+    }
+
+    @Test
+    public void badGetAuth() {
+        assertThrows(ResponseException.class, () -> {
+            authDAO.getAuthData("12423-dfsd-24234");
+        });
+    }
+
+    @Test
+    public void normalDeleteAll() throws ResponseException, DataAccessException {
+        authDAO.createAuth(authToken, username);
+        authDAO.createAuth("dfsd-wrwe-24242", "username2");
+        authDAO.createAuth("dfsd-234234-dfsdf", "username3");
+        authDAO.deleteAll();
+        assertThrows(ResponseException.class, () -> {
+            authDAO.getAuthData(authToken);
+        });
+        assertThrows(ResponseException.class, () -> {
+            authDAO.getAuthData("dfsd-wrwe-24242");
+        });
+        assertThrows(ResponseException.class, () -> {
+            authDAO.getAuthData("dfsd-234234-dfsdf");
+        });
+    }
+
+    @Test
+    public void normalDelete() throws ResponseException, DataAccessException {
+        authDAO.createAuth(authToken, username);
+        authDAO.deleteAuth(authToken);
+        assertThrows(ResponseException.class, () -> {
+            authDAO.getAuthData(authToken);
+        });
+    }
+
+    @Test
+    public void badDelete() throws ResponseException, DataAccessException {
+        assertThrows(ResponseException.class, () -> {
+            authDAO.deleteAuth("dfsd-wrwe-24242");
+        });
+    }
+}
