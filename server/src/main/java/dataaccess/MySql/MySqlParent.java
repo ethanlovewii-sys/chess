@@ -38,8 +38,16 @@ public abstract class MySqlParent {
                     else if (param instanceof Integer p) ps.setInt(i + 1, p);
                     else if (param == null) ps.setNull(i + 1, NULL);
                 }
-                return ps.executeUpdate();
+                if (ps.executeUpdate() == 0) {
+                    throw new ResponseException(String.format("Unable to execute statement: %s", statement), 400);
+                }
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
             }
+            return 0;
         } catch (SQLException e) {
             throw new ResponseException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 400);
         }

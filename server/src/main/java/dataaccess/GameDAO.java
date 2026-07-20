@@ -2,13 +2,14 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
+import server.ResponseException;
 
 import java.util.List;
 
 public interface GameDAO {
-    int createGame(String gameName);
+    int createGame(String gameName) throws ResponseException, DataAccessException;
 
-    GameData getGame(int gameID);
+    GameData getGame(int gameID) throws ResponseException;
 
     int getID();
 

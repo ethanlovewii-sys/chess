@@ -4,7 +4,6 @@ package dataaccess.MySql;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
-import model.AuthData;
 import model.UserData;
 import server.ResponseException;
 
