@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.Memory.MemoryAuthDAO;
+import dataaccess.Memory.MemoryGameDAO;
+import dataaccess.Memory.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +79,7 @@ public class UserTests {
     }
 
     @Test
-    void alreadyLoggedOut() throws ResponseException {
+    void alreadyLoggedOut() throws ResponseException, DataAccessException {
         userService.logout(authToken);
         assertThrows(ResponseException.class, () -> {
             userService.logout(authToken);
