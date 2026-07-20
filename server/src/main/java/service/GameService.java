@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
@@ -75,7 +76,7 @@ public class GameService {
         return (new ListGamesResult(gameDAO.listGames()));
     }
 
-    public void clear() {
+    public void clear() throws ResponseException, DataAccessException {
         userDAO.deleteAll();
         authDAO.deleteAll();
         gameDAO.deleteAll();

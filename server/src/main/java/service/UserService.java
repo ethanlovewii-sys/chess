@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -34,8 +35,8 @@ public class UserService {
         if (username == null || password == null || email == null) {
             throw new ResponseException("Error: bad request", 400);
         }
-
-        userDAO.createUser(username, password, email);
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        userDAO.createUser(username, hashedPassword, email);
         String authToken = UUID.randomUUID().toString();
         authDAO.createAuth(authToken, username);
 
@@ -50,12 +51,13 @@ public class UserService {
             throw new ResponseException("Error: bad request", 400);
         }
 
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         UserData user = userDAO.getUser(username);
 
         if (user == null) {
             throw new ResponseException("Error: unauthorized", 401);
         }
-        if (!user.password().equals(password)) {
+        if (!user.password().equals(hashedPassword)) {
             throw new ResponseException("Error: unauthorized", 401);
         }
 
@@ -65,7 +67,7 @@ public class UserService {
         return new LoginResult(username, authToken);
     }
 
-    public void logout(String authToken) throws ResponseException {
+    public void logout(String authToken) throws ResponseException, DataAccessException {
         AuthData authData = authDAO.getAuthData(authToken);
 
         if (authData == null) {
