@@ -57,30 +57,30 @@ public class UserTest {
         assertEquals(password, userData.password());
         assertEquals(email, userData.email());
     }
-//
-//    @Test
-//    public void badGetAuth() {
-//        assertThrows(ResponseException.class, () -> {
-//            userDAO.getAuthData("12423-dfsd-24234");
-//        });
-//    }
-//
-//    @Test
-//    public void normalDeleteAll() throws ResponseException, DataAccessException {
-//        userDAO.createUser(username, password, email);
-//        authDAO.createAuth("dfsd-wrwe-24242", "username2");
-//        authDAO.createAuth("dfsd-234234-dfsdf", "username3");
-//        authDAO.deleteAll();
-//        assertThrows(ResponseException.class, () -> {
-//            authDAO.getAuthData(authToken);
-//        });
-//        assertThrows(ResponseException.class, () -> {
-//            authDAO.getAuthData("dfsd-wrwe-24242");
-//        });
-//        assertThrows(ResponseException.class, () -> {
-//            authDAO.getAuthData("dfsd-234234-dfsdf");
-//        });
-//    }
+
+    @Test
+    public void badGetUser() {
+        assertThrows(ResponseException.class, () -> {
+            userDAO.getUser("badUsername");
+        });
+    }
+
+    @Test
+    public void normalDeleteAll() throws ResponseException, DataAccessException {
+        userDAO.createUser(username, password, email);
+        userDAO.createUser("username2", password, email);
+        userDAO.createUser("username3", password, email);
+        userDAO.deleteAll();
+        assertThrows(ResponseException.class, () -> {
+            userDAO.getUser(username);
+        });
+        assertThrows(ResponseException.class, () -> {
+            userDAO.getUser("username2");
+        });
+        assertThrows(ResponseException.class, () -> {
+            userDAO.getUser("username3");
+        });
+    }
 //
 //    @Test
 //    public void normalDelete() throws ResponseException, DataAccessException {
