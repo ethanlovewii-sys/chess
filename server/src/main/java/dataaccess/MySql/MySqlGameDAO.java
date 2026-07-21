@@ -60,9 +60,6 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
         return new GameData(gameID, whiteUsername, blackUsername, gameName, gameState);
     }
 
-    public int getID() {
-        return 0;
-    }
 
     public void addPlayer(int gameID, String username, ChessGame.TeamColor teamColor) {
 

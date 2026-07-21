@@ -11,8 +11,6 @@ public interface GameDAO {
 
     GameData getGame(int gameID) throws ResponseException;
 
-    int getID();
-
     void addPlayer(int gameID, String username, ChessGame.TeamColor teamColor);
 
     List<GameData> listGames();

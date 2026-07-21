@@ -57,7 +57,7 @@ public class UserService {
         if (user == null) {
             throw new ResponseException("Error: unauthorized", 401);
         }
-        if (!user.password().equals(hashedPassword)) {
+        if (!BCrypt.checkpw(password, user.password())) {
             throw new ResponseException("Error: unauthorized", 401);
         }
 

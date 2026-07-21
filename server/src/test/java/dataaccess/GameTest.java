@@ -48,36 +48,38 @@ public class GameTest {
     }
 
     @Test
-    public void normalGetUser() throws ResponseException, DataAccessException {
-        userDAO.createUser(username, password, email);
-        UserData userData = userDAO.getUser(username);
-        Assertions.assertNotNull(userData);
-        assertEquals(username, userData.username());
-        assertEquals(password, userData.password());
-        assertEquals(email, userData.email());
+    public void normalGetGame() throws ResponseException, DataAccessException {
+        int gameID = gameDAO.createGame(gameName);
+        //Add changing the game here and seeing if it gets it right
+        GameData gameData = gameDAO.getGame(gameID);
+        Assertions.assertNotNull(gameData);
+        assertEquals(gameName, gameData.gameName());
+        assertEquals(gameID, gameData.gameID());
+        assertNull(gameData.whiteUsername());
+        assertNull(gameData.blackUsername());
     }
 
     @Test
-    public void badGetUser() {
+    public void badGetGame() {
         assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("badUsername");
+            gameDAO.getGame(123);
         });
     }
-
-    @Test
-    public void normalDeleteAll() throws ResponseException, DataAccessException {
-        userDAO.createUser(username, password, email);
-        userDAO.createUser("username2", password, email);
-        userDAO.createUser("username3", password, email);
-        userDAO.deleteAll();
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser(username);
-        });
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("username2");
-        });
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("username3");
-        });
-    }
+//
+//    @Test
+//    public void normalDeleteAll() throws ResponseException, DataAccessException {
+//        userDAO.createUser(username, password, email);
+//        userDAO.createUser("username2", password, email);
+//        userDAO.createUser("username3", password, email);
+//        userDAO.deleteAll();
+//        assertThrows(ResponseException.class, () -> {
+//            userDAO.getUser(username);
+//        });
+//        assertThrows(ResponseException.class, () -> {
+//            userDAO.getUser("username2");
+//        });
+//        assertThrows(ResponseException.class, () -> {
+//            userDAO.getUser("username3");
+//        });
+//    }
 }
