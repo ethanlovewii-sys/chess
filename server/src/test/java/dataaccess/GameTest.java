@@ -64,10 +64,8 @@ public class GameTest {
     }
 
     @Test
-    public void badGetGame() {
-        assertThrows(ResponseException.class, () -> {
-            gameDAO.getGame(123);
-        });
+    public void badGetGame() throws ResponseException {
+        assertNull(gameDAO.getGame(123));
     }
 
     @Test

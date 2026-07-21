@@ -9,8 +9,8 @@ import server.ResponseException;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthTest {
 
@@ -52,10 +52,9 @@ public class AuthTest {
     }
 
     @Test
-    public void badGetAuth() {
-        assertThrows(ResponseException.class, () -> {
-            authDAO.getAuthData("12423-dfsd-24234");
-        });
+    public void badGetAuth() throws ResponseException {
+        assertNull(authDAO.getAuthData("12423-dfsd-24234"));
+
     }
 
     @Test
@@ -64,24 +63,16 @@ public class AuthTest {
         authDAO.createAuth("dfsd-wrwe-24242", "username2");
         authDAO.createAuth("dfsd-234234-dfsdf", "username3");
         authDAO.deleteAll();
-        assertThrows(ResponseException.class, () -> {
-            authDAO.getAuthData(authToken);
-        });
-        assertThrows(ResponseException.class, () -> {
-            authDAO.getAuthData("dfsd-wrwe-24242");
-        });
-        assertThrows(ResponseException.class, () -> {
-            authDAO.getAuthData("dfsd-234234-dfsdf");
-        });
+        assertNull(authDAO.getAuthData(authToken));
+        assertNull(authDAO.getAuthData("dfsd-wrwe-24242"));
+        assertNull(authDAO.getAuthData("dfsd-234234-dfsdf"));
     }
 
     @Test
     public void normalDelete() throws ResponseException, DataAccessException {
         authDAO.createAuth(authToken, username);
         authDAO.deleteAuth(authToken);
-        assertThrows(ResponseException.class, () -> {
-            authDAO.getAuthData(authToken);
-        });
+        assertNull(authDAO.getAuthData(authToken));
     }
 
     @Test

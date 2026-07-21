@@ -10,8 +10,7 @@ import server.ResponseException;
 
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
     UserDAO userDAO = new MySqlUserDAO();
@@ -54,10 +53,8 @@ public class UserTest {
     }
 
     @Test
-    public void badGetUser() {
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("badUsername");
-        });
+    public void badGetUser() throws ResponseException, DataAccessException {
+        assertNull(userDAO.getUser("badUsername"));
     }
 
     @Test
@@ -66,14 +63,8 @@ public class UserTest {
         userDAO.createUser("username2", password, email);
         userDAO.createUser("username3", password, email);
         userDAO.deleteAll();
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser(username);
-        });
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("username2");
-        });
-        assertThrows(ResponseException.class, () -> {
-            userDAO.getUser("username3");
-        });
+        assertNull(userDAO.getUser(username));
+        assertNull(userDAO.getUser("username2"));
+        assertNull(userDAO.getUser("username3"));
     }
 }

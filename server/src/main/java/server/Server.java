@@ -9,6 +9,7 @@ import dataaccess.MySql.MySqlAuthDAO;
 import dataaccess.MySql.MySqlGameDAO;
 import dataaccess.MySql.MySqlUserDAO;
 import io.javalin.*;
+import org.jetbrains.annotations.NotNull;
 import result.ErrorResult;
 import server.handler.GameHandler;
 import server.handler.UserHandler;
@@ -40,10 +41,16 @@ public class Server {
         javalin.delete("/db", gameHandler::clear);
 
         //Catches exceptions and has the exception handler format them
-        javalin.exception(ResponseException.class, this::exceptionHandler);
+        javalin.exception(ResponseException.class, this::responseExceptionHandler);
+        javalin.exception(DataAccessException.class, this::dataExceptionHandler);
     }
 
-    private void exceptionHandler(ResponseException ex, Context context) {
+    private void dataExceptionHandler(DataAccessException ex,Context context) {
+        context.status(500);
+        context.result(new Gson().toJson(new ErrorResult(ex.getMessage())));
+    }
+
+    private void responseExceptionHandler(ResponseException ex, Context context) {
         context.status(ex.statusCode());
         context.result(new Gson().toJson(new ErrorResult(ex.getMessage())));
     }
