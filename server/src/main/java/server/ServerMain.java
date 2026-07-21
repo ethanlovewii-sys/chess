@@ -1,6 +1,6 @@
 package server;
 
-import dataaccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class ServerMain {
     public static void main(String[] args) throws ResponseException, DataAccessException {

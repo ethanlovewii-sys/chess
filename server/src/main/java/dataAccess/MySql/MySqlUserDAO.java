@@ -1,9 +1,9 @@
-package dataaccess.MySql;
+package dataAccess.MySql;
 
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.UserDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
+import dataAccess.UserDAO;
 import model.UserData;
 import server.ResponseException;
 
@@ -19,20 +19,20 @@ public class MySqlUserDAO extends MySqlParent implements UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException, ResponseException {
-            try (Connection conn = DatabaseManager.getConnection()) {
-                var statement = "SELECT username, password, email FROM users WHERE username = ?";
-                try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                    ps.setString(1, username);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            return readUser(rs);
-                        }
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM users WHERE username = ?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
                     }
                 }
-            } catch (Exception e) {
-                throw new ResponseException(String.format("Error: Unable to read data: %s", e.getMessage()), 500);
             }
-            return null;
+        } catch (Exception e) {
+            throw new ResponseException(String.format("Error: Unable to read data: %s", e.getMessage()), 500);
+        }
+        return null;
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
@@ -59,7 +59,7 @@ public class MySqlUserDAO extends MySqlParent implements UserDAO {
     @Override
     protected String[] getCreateStatements() {
         return new String[]{
-            """
+                """
             CREATE TABLE IF NOT EXISTS  users (
               `username` VARCHAR(255) NOT NULL,
               `password` VARCHAR(255) NOT NULL,

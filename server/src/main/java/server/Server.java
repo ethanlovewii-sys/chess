@@ -1,15 +1,11 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.*;
-import dataaccess.Memory.MemoryAuthDAO;
-import dataaccess.Memory.MemoryGameDAO;
-import dataaccess.Memory.MemoryUserDAO;
-import dataaccess.MySql.MySqlAuthDAO;
-import dataaccess.MySql.MySqlGameDAO;
-import dataaccess.MySql.MySqlUserDAO;
+import dataAccess.*;
+import dataAccess.MySql.MySqlAuthDAO;
+import dataAccess.MySql.MySqlGameDAO;
+import dataAccess.MySql.MySqlUserDAO;
 import io.javalin.*;
-import org.jetbrains.annotations.NotNull;
 import result.ErrorResult;
 import server.handler.GameHandler;
 import server.handler.UserHandler;
@@ -45,7 +41,7 @@ public class Server {
         javalin.exception(DataAccessException.class, this::dataExceptionHandler);
     }
 
-    private void dataExceptionHandler(DataAccessException ex,Context context) {
+    private void dataExceptionHandler(DataAccessException ex, Context context) {
         context.status(500);
         context.result(new Gson().toJson(new ErrorResult(ex.getMessage())));
     }

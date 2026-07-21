@@ -1,13 +1,12 @@
-package dataaccess.MySql;
+package dataAccess.MySql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.GameDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
+import dataAccess.GameDAO;
 import model.GameData;
 import server.ResponseException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -112,7 +111,8 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
 
             ps.executeUpdate();
 
-        }    }
+        }
+    }
 
     @Override
     protected String[] getCreateStatements() {

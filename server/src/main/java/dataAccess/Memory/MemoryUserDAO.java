@@ -1,6 +1,6 @@
-package dataaccess.Memory;
+package dataAccess.Memory;
 
-import dataaccess.UserDAO;
+import dataAccess.UserDAO;
 import model.UserData;
 import java.util.HashMap;
 

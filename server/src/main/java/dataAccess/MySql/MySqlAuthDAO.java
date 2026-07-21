@@ -1,11 +1,10 @@
-package dataaccess.MySql;
+package dataAccess.MySql;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import model.AuthData;
 import server.ResponseException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -72,7 +71,7 @@ public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
     @Override
     protected String[] getCreateStatements() {
         return new String[]{
-            """
+                """
             CREATE TABLE IF NOT EXISTS  auth (
               `authToken` VARCHAR(255) NOT NULL,
               `username` VARCHAR(255) NOT NULL,

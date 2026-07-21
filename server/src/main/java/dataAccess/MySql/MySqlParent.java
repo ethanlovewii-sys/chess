@@ -1,7 +1,7 @@
-package dataaccess.MySql;
+package dataAccess.MySql;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import server.ResponseException;
 
 import java.sql.Connection;
@@ -34,9 +34,13 @@ public abstract class MySqlParent {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    } else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    } else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 if (ps.executeUpdate() == 0) {
                     throw new ResponseException(String.format("Error: Unable to execute statement: %s", statement), 400);

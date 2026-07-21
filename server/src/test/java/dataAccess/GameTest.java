@@ -1,10 +1,9 @@
-package dataaccess;
+package dataAccess;
 
 import chess.ChessGame;
-import dataaccess.MySql.MySqlGameDAO;
-import dataaccess.MySql.MySqlUserDAO;
+import dataAccess.MySql.MySqlGameDAO;
+import dataAccess.MySql.MySqlUserDAO;
 import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,23 +101,4 @@ public class GameTest {
         assertEquals("game1", gameList.get(0).gameName());
     }
 
-
-
-//
-//    @Test
-//    public void normalDeleteAll() throws ResponseException, DataAccessException {
-//        userDAO.createUser(username, password, email);
-//        userDAO.createUser("username2", password, email);
-//        userDAO.createUser("username3", password, email);
-//        userDAO.deleteAll();
-//        assertThrows(ResponseException.class, () -> {
-//            userDAO.getUser(username);
-//        });
-//        assertThrows(ResponseException.class, () -> {
-//            userDAO.getUser("username2");
-//        });
-//        assertThrows(ResponseException.class, () -> {
-//            userDAO.getUser("username3");
-//        });
-//    }
 }

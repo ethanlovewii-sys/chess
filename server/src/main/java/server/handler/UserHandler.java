@@ -1,7 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataaccess.*;
+import dataAccess.*;
 import io.javalin.http.Context;
 import request.LoginRequest;
 import request.RegisterRequest;
