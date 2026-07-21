@@ -39,7 +39,7 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException {
+    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException, DataAccessException {
         AuthData authData = authDAO.getAuthData(authToken);
         if (authData == null) {
             throw new ResponseException("Error: unauthorized", 401);

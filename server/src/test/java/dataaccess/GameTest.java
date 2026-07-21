@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataaccess.MySql.MySqlGameDAO;
 import dataaccess.MySql.MySqlUserDAO;
 import model.GameData;
@@ -65,6 +66,29 @@ public class GameTest {
             gameDAO.getGame(123);
         });
     }
+
+    @Test
+    public void normalAddPlayer() throws ResponseException, DataAccessException {
+        int gameID = gameDAO.createGame(gameName);
+        gameDAO.addPlayer(gameID, username, ChessGame.TeamColor.WHITE);
+        GameData gameData = gameDAO.getGame(gameID);
+        assertEquals(username, gameData.whiteUsername());
+        assertNull(gameData.blackUsername());
+
+        gameDAO.addPlayer(gameID, "blackUser", ChessGame.TeamColor.BLACK);
+        gameData = gameDAO.getGame(gameID);
+        assertEquals("blackUser", gameData.blackUsername());
+        assertEquals(username, gameData.whiteUsername());
+    }
+
+    @Test
+    public void badAddPlayer(){
+        assertThrows(ResponseException.class, () -> {
+            gameDAO.addPlayer(123, username, ChessGame.TeamColor.WHITE);
+        });
+
+    }
+
 //
 //    @Test
 //    public void normalDeleteAll() throws ResponseException, DataAccessException {

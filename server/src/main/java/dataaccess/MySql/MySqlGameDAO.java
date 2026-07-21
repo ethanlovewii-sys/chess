@@ -26,11 +26,11 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
             throw new ResponseException("Must provide a game name", 400);
         }
         var statement = """
-        INSERT INTO games
-        (whiteUsername, blackUsername, gameName, gameState)
-         VALUES (?, ?, ?, ?)
-        """;
-        return executeUpdate(statement,  null, null, gameName, new Gson().toJson( new ChessGame()));
+                INSERT INTO games
+                (whiteUsername, blackUsername, gameName, gameState)
+                 VALUES (?, ?, ?, ?)
+                """;
+        return executeUpdate(statement, null, null, gameName, new Gson().toJson(new ChessGame()));
     }
 
     public GameData getGame(int gameID) throws ResponseException {
@@ -51,18 +51,32 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
-        var gameID = rs.getInt(1);
-        var whiteUsername = rs.getString("whiteUsername");
-        var blackUsername = rs.getString("blackUsername");
-        var gameName = rs.getString("gameName");
-        var jsonGameState = rs.getString("gameState");
+        int gameID = rs.getInt(1);
+        String whiteUsername = rs.getString("whiteUsername");
+        String blackUsername = rs.getString("blackUsername");
+        String gameName = rs.getString("gameName");
+        String jsonGameState = rs.getString("gameState");
         ChessGame gameState = new Gson().fromJson(jsonGameState, ChessGame.class);
-        return new GameData(gameID, whiteUsername, blackUsername, gameName, gameState);
+        return new GameData (gameID, whiteUsername, blackUsername, gameName, gameState);
     }
 
 
-    public void addPlayer(int gameID, String username, ChessGame.TeamColor teamColor) {
-
+    public void addPlayer(int gameID, String username, ChessGame.TeamColor teamColor) throws ResponseException, DataAccessException {
+        String statement = null;
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            statement = """
+                    UPDATE games
+                    SET whiteUsername = ?
+                    WHERE gameID = ?
+                    """;
+        } else if (teamColor == ChessGame.TeamColor.BLACK) {
+            statement = """
+                    UPDATE games
+                    SET blackUsername = ?
+                    WHERE gameID = ?
+                    """;
+        }
+        executeUpdate(statement, username, gameID);
     }
 
     public List<GameData> listGames() {
@@ -76,7 +90,7 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
     @Override
     protected String[] getCreateStatements() {
         return new String[]{
-            """
+                """
             CREATE TABLE IF NOT EXISTS  games (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` VARCHAR(255),

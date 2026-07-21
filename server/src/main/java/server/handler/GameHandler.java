@@ -31,7 +31,7 @@ public class GameHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public void joinGame(Context context) throws ResponseException {
+    public void joinGame(Context context) throws ResponseException, DataAccessException {
         //Convert JSON -> Java object
         JoinGameRequest request = new Gson().fromJson(context.body(), JoinGameRequest.class);
         String authToken = context.header("Authorization");
