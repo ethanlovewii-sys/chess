@@ -17,6 +17,8 @@ import result.ListGamesResult;
 import result.RegisterResult;
 import server.ResponseException;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -33,7 +35,7 @@ public class GameTests {
     int existingGameID;
 
     @BeforeEach
-    public void setup() throws ResponseException, DataAccessException {
+    public void setup() throws ResponseException, DataAccessException, SQLException {
         //Clear all data, create existing user, and game.
         gameService.clear();
         RegisterResult existingUser = userService.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
@@ -75,7 +77,7 @@ public class GameTests {
     }
 
     @Test
-    void normalListGames() throws ResponseException, DataAccessException {
+    void normalListGames() throws ResponseException, DataAccessException, SQLException {
         gameService.createGame(new CreateGameRequest("Game2"), authToken);
         gameService.createGame(new CreateGameRequest("Game3"), authToken);
         gameService.createGame(new CreateGameRequest("Game4"), authToken);

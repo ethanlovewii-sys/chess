@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.GameData;
 import server.ResponseException;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface GameDAO {
@@ -13,7 +14,7 @@ public interface GameDAO {
 
     void addPlayer(int gameID, String username, ChessGame.TeamColor teamColor) throws ResponseException, DataAccessException;
 
-    List<GameData> listGames();
+    List<GameData> listGames() throws DataAccessException, SQLException;
 
-    void deleteAll();
+    void deleteAll() throws ResponseException, DataAccessException, SQLException;
 }

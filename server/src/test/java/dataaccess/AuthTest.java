@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.ResponseException;
+
+import java.sql.SQLException;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +23,7 @@ public class AuthTest {
     }
 
     @BeforeEach
-    void setUp() throws ResponseException, DataAccessException {
+    void setUp() throws ResponseException, DataAccessException, SQLException {
         authDAO.deleteAll();
     }
 
@@ -57,7 +59,7 @@ public class AuthTest {
     }
 
     @Test
-    public void normalDeleteAll() throws ResponseException, DataAccessException {
+    public void normalDeleteAll() throws ResponseException, DataAccessException, SQLException {
         authDAO.createAuth(authToken, username);
         authDAO.createAuth("dfsd-wrwe-24242", "username2");
         authDAO.createAuth("dfsd-234234-dfsdf", "username3");

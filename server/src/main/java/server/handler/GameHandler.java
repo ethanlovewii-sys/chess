@@ -10,6 +10,8 @@ import result.ListGamesResult;
 import server.ResponseException;
 import service.GameService;
 
+import java.sql.SQLException;
+
 public class GameHandler {
 
     private final GameService service;
@@ -43,7 +45,7 @@ public class GameHandler {
         context.status(200);
     }
 
-    public void listGames(Context context) throws ResponseException {
+    public void listGames(Context context) throws ResponseException, SQLException, DataAccessException {
         //Convert JSON -> Java object
         String authToken = context.header("Authorization");
 
@@ -55,7 +57,7 @@ public class GameHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public void clear(Context context) throws ResponseException, DataAccessException {
+    public void clear(Context context) throws ResponseException, DataAccessException, SQLException {
         service.clear();
         context.status(200);
     }

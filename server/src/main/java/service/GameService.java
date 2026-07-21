@@ -13,6 +13,8 @@ import result.CreateGameResult;
 import result.ListGamesResult;
 import server.ResponseException;
 
+import java.sql.SQLException;
+
 public class GameService {
 
     private final GameDAO gameDAO;
@@ -67,7 +69,7 @@ public class GameService {
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
     }
 
-    public ListGamesResult listGames(String authToken) throws ResponseException {
+    public ListGamesResult listGames(String authToken) throws ResponseException, SQLException, DataAccessException {
         AuthData authData = authDAO.getAuthData(authToken);
         if (authData == null) {
             throw new ResponseException("Error: unauthorized", 401);
@@ -76,7 +78,7 @@ public class GameService {
         return (new ListGamesResult(gameDAO.listGames()));
     }
 
-    public void clear() throws ResponseException, DataAccessException {
+    public void clear() throws ResponseException, DataAccessException, SQLException {
         userDAO.deleteAll();
         authDAO.deleteAll();
         gameDAO.deleteAll();

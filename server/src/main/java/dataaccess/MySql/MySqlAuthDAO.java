@@ -22,9 +22,13 @@ public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
         executeUpdate(statement, username, authToken);
     }
 
-    public void deleteAll() throws ResponseException, DataAccessException {
-        var statement = "TRUNCATE auth";
-        executeUpdate(statement);
+    public void deleteAll() throws ResponseException, DataAccessException, SQLException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM auth")) {
+
+            ps.executeUpdate();
+
+        }
     }
 
     public AuthData getAuthData(String authToken) throws ResponseException {
@@ -46,10 +50,7 @@ public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
 
     public void deleteAuth(String authToken) throws ResponseException, DataAccessException {
         var statement = "DELETE FROM auth WHERE authToken = ?";
-        int rowsAffected = executeUpdate(statement, authToken);
-        if (rowsAffected == 0) {
-            throw new ResponseException("Error: unauthorized", 401);
-        }
+        executeUpdate(statement, authToken);
     }
 
     private final String[] createStatements = {

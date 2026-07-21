@@ -10,6 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.ResponseException;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
@@ -26,7 +29,7 @@ public class GameTest {
     }
 
     @BeforeEach
-    void setUp() throws ResponseException, DataAccessException {
+    void setUp() throws ResponseException, DataAccessException, SQLException {
         gameDAO.deleteAll();
     }
 
@@ -88,6 +91,20 @@ public class GameTest {
         });
 
     }
+
+    @Test
+    public void normalListGames() throws ResponseException, DataAccessException, SQLException {
+        List<GameData> gameList = gameDAO.listGames();
+        assertEquals(0, gameList.size());
+        gameDAO.createGame("game1");
+        gameDAO.createGame("game1");
+        gameDAO.createGame("game1");
+        gameList = gameDAO.listGames();
+        assertEquals(3, gameList.size());
+        assertEquals("game1", gameList.get(0).gameName());
+    }
+
+
 
 //
 //    @Test

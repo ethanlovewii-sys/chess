@@ -15,6 +15,8 @@ import result.LoginResult;
 import result.RegisterResult;
 import server.ResponseException;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,7 +32,7 @@ public class UserTests {
     String authToken;
 
     @BeforeEach
-    public void setup() throws ResponseException, DataAccessException {
+    public void setup() throws ResponseException, DataAccessException, SQLException {
         gameService.clear();
         RegisterResult existingUser = userService.register(new RegisterRequest("ExistingUser", "existingUserPassword", "eu@mail.com"));
         authToken = existingUser.authToken();
