@@ -1,6 +1,6 @@
 package dataAccess;
 
-import dataAccess.MySql.MySqlAuthDAO;
+import dataAccess.mySql.MySqlAuth;
 import model.AuthData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthTest {
 
-    AuthDAO authDAO = new MySqlAuthDAO();
+    AuthDAO authDAO = new MySqlAuth();
 
     String authToken =  UUID.randomUUID().toString();
     String username = "username";

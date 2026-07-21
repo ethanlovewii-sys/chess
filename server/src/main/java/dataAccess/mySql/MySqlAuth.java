@@ -1,4 +1,4 @@
-package dataAccess.MySql;
+package dataAccess.mySql;
 
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
@@ -10,9 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
+public class MySqlAuth extends MySqlParent implements AuthDAO {
 
-    public MySqlAuthDAO() throws ResponseException, DataAccessException {
+    public MySqlAuth() throws ResponseException, DataAccessException {
         configureDatabase();
     }
 

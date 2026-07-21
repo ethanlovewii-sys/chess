@@ -1,6 +1,6 @@
 package dataAccess;
 
-import dataAccess.MySql.MySqlUserDAO;
+import dataAccess.mySql.MySqlUser;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
-    UserDAO userDAO = new MySqlUserDAO();
+    UserDAO userDAO = new MySqlUser();
 
     String username = "username";
     String password = "password";

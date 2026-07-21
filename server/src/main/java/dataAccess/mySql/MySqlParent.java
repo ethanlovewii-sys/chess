@@ -1,4 +1,4 @@
-package dataAccess.MySql;
+package dataAccess.mySql;
 
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;

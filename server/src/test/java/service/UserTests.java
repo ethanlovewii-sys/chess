@@ -1,9 +1,9 @@
 package service;
 
 import dataAccess.*;
-import dataAccess.MySql.MySqlAuthDAO;
-import dataAccess.MySql.MySqlGameDAO;
-import dataAccess.MySql.MySqlUserDAO;
+import dataAccess.mySql.MySqlAuth;
+import dataAccess.mySql.MySqlGame;
+import dataAccess.mySql.MySqlUser;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserTests {
 
-    UserDAO userDAO = new MySqlUserDAO();
-    AuthDAO authDAO = new MySqlAuthDAO();
-    GameDAO gameDAO = new MySqlGameDAO();
+    UserDAO userDAO = new MySqlUser();
+    AuthDAO authDAO = new MySqlAuth();
+    GameDAO gameDAO = new MySqlGame();
 
     UserService userService = new UserService(userDAO, authDAO);
     GameService gameService = new GameService(gameDAO, authDAO, userDAO);

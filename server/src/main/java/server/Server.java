@@ -2,9 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.*;
-import dataAccess.MySql.MySqlAuthDAO;
-import dataAccess.MySql.MySqlGameDAO;
-import dataAccess.MySql.MySqlUserDAO;
+import dataAccess.mySql.MySqlAuth;
+import dataAccess.mySql.MySqlGame;
+import dataAccess.mySql.MySqlUser;
 import io.javalin.*;
 import result.ErrorResult;
 import server.handler.GameHandler;
@@ -19,9 +19,9 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         //Initializing memory and feeding them to the handlers
-        UserDAO userDAO = new MySqlUserDAO();
-        AuthDAO authDAO = new MySqlAuthDAO();
-        GameDAO gameDAO = new MySqlGameDAO();
+        UserDAO userDAO = new MySqlUser();
+        AuthDAO authDAO = new MySqlAuth();
+        GameDAO gameDAO = new MySqlGame();
 
         UserHandler userHandler = new UserHandler(userDAO, authDAO);
         GameHandler gameHandler = new GameHandler(userDAO, authDAO, gameDAO);

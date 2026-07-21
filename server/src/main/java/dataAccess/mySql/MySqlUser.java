@@ -1,4 +1,4 @@
-package dataAccess.MySql;
+package dataAccess.mySql;
 
 
 import dataAccess.DataAccessException;
@@ -12,9 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MySqlUserDAO extends MySqlParent implements UserDAO {
+public class MySqlUser extends MySqlParent implements UserDAO {
 
-    public MySqlUserDAO() throws ResponseException, DataAccessException {
+    public MySqlUser() throws ResponseException, DataAccessException {
         configureDatabase();
     }
 

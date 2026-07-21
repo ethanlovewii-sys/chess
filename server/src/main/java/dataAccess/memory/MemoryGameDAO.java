@@ -1,4 +1,4 @@
-package dataAccess.Memory;
+package dataAccess.memory;
 
 import chess.ChessGame;
 import dataAccess.GameDAO;

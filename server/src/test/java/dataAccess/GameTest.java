@@ -1,8 +1,8 @@
 package dataAccess;
 
 import chess.ChessGame;
-import dataAccess.MySql.MySqlGameDAO;
-import dataAccess.MySql.MySqlUserDAO;
+import dataAccess.mySql.MySqlGame;
+import dataAccess.mySql.MySqlUser;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +15,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
-    UserDAO userDAO = new MySqlUserDAO();
-    GameDAO gameDAO = new MySqlGameDAO();
+    UserDAO userDAO = new MySqlUser();
+    GameDAO gameDAO = new MySqlGame();
 
     String username = "username";
     String password = "password";

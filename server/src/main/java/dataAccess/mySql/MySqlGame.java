@@ -1,4 +1,4 @@
-package dataAccess.MySql;
+package dataAccess.mySql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -14,9 +14,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySqlGameDAO extends MySqlParent implements GameDAO {
+public class MySqlGame extends MySqlParent implements GameDAO {
 
-    public MySqlGameDAO() throws ResponseException, DataAccessException {
+    public MySqlGame() throws ResponseException, DataAccessException {
         configureDatabase();
     }
 
