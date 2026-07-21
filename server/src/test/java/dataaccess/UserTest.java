@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import server.ResponseException;
 
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,7 +24,7 @@ public class UserTest {
     }
 
     @BeforeEach
-    void setUp() throws ResponseException, DataAccessException {
+    void setUp() throws ResponseException, DataAccessException, SQLException {
         userDAO.deleteAll();
     }
 
@@ -59,7 +61,7 @@ public class UserTest {
     }
 
     @Test
-    public void normalDeleteAll() throws ResponseException, DataAccessException {
+    public void normalDeleteAll() throws ResponseException, DataAccessException, SQLException {
         userDAO.createUser(username, password, email);
         userDAO.createUser("username2", password, email);
         userDAO.createUser("username3", password, email);

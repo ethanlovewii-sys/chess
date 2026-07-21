@@ -25,7 +25,7 @@ public abstract class MySqlParent {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()), 400);
+            throw new ResponseException(String.format("Error: Unable to configure database: %s", ex.getMessage()), 400);
         }
     }
 
@@ -39,7 +39,7 @@ public abstract class MySqlParent {
                     else if (param == null) ps.setNull(i + 1, NULL);
                 }
                 if (ps.executeUpdate() == 0) {
-                    throw new ResponseException(String.format("Unable to execute statement: %s", statement), 400);
+                    throw new ResponseException(String.format("Error: Unable to execute statement: %s", statement), 400);
                 }
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -49,7 +49,7 @@ public abstract class MySqlParent {
             }
             return 0;
         } catch (SQLException e) {
-            throw new ResponseException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 400);
+            throw new ResponseException(String.format("Error: Unable to update database: %s, %s", statement, e.getMessage()), 400);
         }
     }
 

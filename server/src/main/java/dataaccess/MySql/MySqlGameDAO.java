@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
-import model.AuthData;
 import model.GameData;
 import server.ResponseException;
 
@@ -24,7 +23,7 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
 
     public int createGame(String gameName) throws ResponseException, DataAccessException {
         if (gameName == null || gameName.isEmpty()) {
-            throw new ResponseException("Must provide a game name", 400);
+            throw new ResponseException("Must provide a game name", 500);
         }
         var statement = """
                 INSERT INTO games
@@ -46,9 +45,9 @@ public class MySqlGameDAO extends MySqlParent implements GameDAO {
                 }
             }
         } catch (Exception e) {
-            throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 400);
+            throw new ResponseException(String.format("Error: Unable to read data: %s", e.getMessage()), 500);
         }
-        throw new ResponseException("Error: unauthorized", 401);
+        return null;
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {

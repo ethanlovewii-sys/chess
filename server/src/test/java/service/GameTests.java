@@ -5,6 +5,9 @@ import dataaccess.*;
 import dataaccess.Memory.MemoryAuthDAO;
 import dataaccess.Memory.MemoryGameDAO;
 import dataaccess.Memory.MemoryUserDAO;
+import dataaccess.MySql.MySqlAuthDAO;
+import dataaccess.MySql.MySqlGameDAO;
+import dataaccess.MySql.MySqlUserDAO;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +27,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GameTests {
 
-    UserDAO userDAO = new MemoryUserDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
-    GameDAO gameDAO = new MemoryGameDAO();
+    UserDAO userDAO = new MySqlUserDAO();
+    AuthDAO authDAO = new MySqlAuthDAO();
+    GameDAO gameDAO = new MySqlGameDAO();
 
     UserService userService = new UserService(userDAO, authDAO);
     GameService gameService = new GameService(gameDAO, authDAO, userDAO);
 
     String authToken;
     int existingGameID;
+
+    public GameTests() throws ResponseException, DataAccessException {
+    }
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException, SQLException {

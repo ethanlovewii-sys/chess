@@ -43,9 +43,9 @@ public class MySqlAuthDAO extends MySqlParent implements AuthDAO {
                 }
             }
         } catch (Exception e) {
-            throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 400);
+            throw new ResponseException(String.format("Error: Unable to read data: %s", e.getMessage()), 500);
         }
-        throw new ResponseException("Error: unauthorized", 401);
+        return null;
     }
 
     public void deleteAuth(String authToken) throws ResponseException, DataAccessException {

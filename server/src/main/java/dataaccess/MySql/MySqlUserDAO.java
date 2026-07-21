@@ -30,9 +30,9 @@ public class MySqlUserDAO extends MySqlParent implements UserDAO {
                     }
                 }
             } catch (Exception e) {
-                throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 400);
+                throw new ResponseException(String.format("Error: Unable to read data: %s", e.getMessage()), 500);
             }
-            throw new ResponseException("Error: unauthorized", 401);
+            return null;
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
@@ -47,9 +47,13 @@ public class MySqlUserDAO extends MySqlParent implements UserDAO {
         executeUpdate(statement, username, password, email);
     }
 
-    public void deleteAll() throws ResponseException, DataAccessException {
-        var statement = "TRUNCATE users";
-        executeUpdate(statement);
+    public void deleteAll() throws ResponseException, DataAccessException, SQLException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM users")) {
+
+            ps.executeUpdate();
+
+        }
     }
 
     @Override
