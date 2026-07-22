@@ -49,6 +49,7 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         return null;
     }
 
+    //Turns the result set to Game Data Object
     private GameData readGame(ResultSet rs) throws SQLException {
         int gameID = rs.getInt(1);
         String whiteUsername = rs.getString("whiteUsername");
