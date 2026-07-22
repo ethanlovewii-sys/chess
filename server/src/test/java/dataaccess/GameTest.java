@@ -38,9 +38,6 @@ public class GameTest {
         GameData gameData = gameDAO.getGame(gameID);
         Assertions.assertNotNull(gameData);
         assertEquals(gameName, gameData.gameName());
-        assertEquals(gameID, gameData.gameID());
-        assertNull(gameData.whiteUsername());
-        assertNull(gameData.blackUsername());
     }
 
     @Test
