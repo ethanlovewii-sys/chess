@@ -98,4 +98,21 @@ public class GameTest {
         assertEquals("game1", gameList.get(0).gameName());
     }
 
+    @Test
+    public void badListGames() throws ResponseException, DataAccessException {
+        assertThrows(ResponseException.class, () -> {
+            gameDAO.createGame(null);
+        });
+    }
+
+    @Test
+    public void deleteAll() throws ResponseException, DataAccessException, SQLException {
+        gameDAO.createGame(gameName);
+        gameDAO.createGame("game2");
+        gameDAO.createGame("game3");
+        gameDAO.deleteAll();
+        List<GameData> gameList = gameDAO.listGames();
+        assertEquals(0, gameList.size());
+    }
+
 }
