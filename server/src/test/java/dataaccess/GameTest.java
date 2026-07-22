@@ -1,8 +1,8 @@
-package dataAccess;
+package dataaccess;
 
 import chess.ChessGame;
-import dataAccess.mySql.MySqlGame;
-import dataAccess.mySql.MySqlUser;
+import dataaccess.mySql.MySqlGame;
+import dataaccess.mySql.MySqlUser;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

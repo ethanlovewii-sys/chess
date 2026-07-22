@@ -1,8 +1,8 @@
-package dataAccess.mySql;
+package dataaccess.mySql;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import model.AuthData;
 import server.ResponseException;
 import java.sql.Connection;

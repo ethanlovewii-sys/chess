@@ -1,7 +1,7 @@
 package server.handler;
 
 import com.google.gson.Gson;
-import dataAccess.*;
+import dataaccess.*;
 import io.javalin.http.Context;
 import request.CreateGameRequest;
 import request.JoinGameRequest;

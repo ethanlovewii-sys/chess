@@ -1,7 +1,7 @@
-package dataAccess.mySql;
+package dataaccess.mySql;
 
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import server.ResponseException;
 
 import java.sql.Connection;

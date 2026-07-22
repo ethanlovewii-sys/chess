@@ -1,7 +1,7 @@
-package dataAccess.memory;
+package dataaccess.memory;
 
 import chess.ChessGame;
-import dataAccess.GameDAO;
+import dataaccess.GameDAO;
 import model.GameData;
 import java.util.ArrayList;
 import java.util.HashMap;

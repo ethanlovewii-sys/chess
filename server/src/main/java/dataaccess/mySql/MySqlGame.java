@@ -1,10 +1,10 @@
-package dataAccess.mySql;
+package dataaccess.mySql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
-import dataAccess.GameDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.GameDAO;
 import model.GameData;
 import server.ResponseException;
 import java.sql.Connection;

@@ -1,9 +1,9 @@
-package dataAccess.mySql;
+package dataaccess.mySql;
 
 
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
-import dataAccess.UserDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.UserDAO;
 import model.UserData;
 import server.ResponseException;
 
