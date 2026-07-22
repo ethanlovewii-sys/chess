@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import model.AuthData;
 import server.ResponseException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,8 +13,7 @@ import java.sql.SQLException;
 
 public class MySqlAuth extends MySqlParent implements AuthDAO {
 
-    public MySqlAuth() throws ResponseException, DataAccessException {
-        configureDatabase();
+    public MySqlAuth() {
     }
 
     public void createAuth(String authToken, String username) throws ResponseException, DataAccessException {
@@ -52,15 +52,6 @@ public class MySqlAuth extends MySqlParent implements AuthDAO {
         executeUpdate(statement, authToken);
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `authToken` VARCHAR(255) NOT NULL,
-              `username` VARCHAR(255) NOT NULL,
-              PRIMARY KEY (`authToken`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
 
     private AuthData readAuth(ResultSet rs) throws SQLException {
         var username = rs.getString("username");
@@ -68,16 +59,4 @@ public class MySqlAuth extends MySqlParent implements AuthDAO {
         return new AuthData(authToken, username);
     }
 
-    @Override
-    protected String[] getCreateStatements() {
-        return new String[]{
-                """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `authToken` VARCHAR(255) NOT NULL,
-              `username` VARCHAR(255) NOT NULL,
-              PRIMARY KEY (`authToken`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-        };
-    }
 }

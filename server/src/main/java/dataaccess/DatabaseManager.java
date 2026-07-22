@@ -1,5 +1,7 @@
 package dataaccess;
 
+import server.ResponseException;
+
 import java.sql.*;
 import java.util.Properties;
 
@@ -74,6 +76,44 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+    private static final String[] statements = {
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` VARCHAR(255) NOT NULL,
+              `username` VARCHAR(255) NOT NULL,
+              PRIMARY KEY (`authToken`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` VARCHAR(255),
+              `blackUsername` VARCHAR(255),
+              `gameName` VARCHAR(255),
+              gameState JSON,
+              PRIMARY KEY (`gameID`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  users (
+              `username` VARCHAR(255) NOT NULL,
+              `password` VARCHAR(255) NOT NULL,
+              `email` VARCHAR(255) NOT NULL,
+              PRIMARY KEY (`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
 
-
+    public static void configureDatabase() throws ResponseException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : statements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(String.format("Error: Unable to configure database: %s", ex.getMessage()), 400);
+        }
+    }
 }

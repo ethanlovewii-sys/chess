@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import dataaccess.mysql.MySqlAuth;
 import dataaccess.mysql.MySqlGame;
+import dataaccess.mysql.MySqlParent;
 import dataaccess.mysql.MySqlUser;
 import io.javalin.*;
 import result.ErrorResult;
@@ -15,9 +16,13 @@ public class Server {
 
     private final Javalin javalin;
 
-    public Server() throws ResponseException, DataAccessException {
+    public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-
+        try {
+            DatabaseManager.configureDatabase();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         //Initializing memory and feeding them to the handlers
         UserDAO userDAO = new MySqlUser();
         AuthDAO authDAO = new MySqlAuth();

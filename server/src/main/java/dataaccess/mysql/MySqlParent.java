@@ -12,22 +12,7 @@ import java.sql.SQLException;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
-public abstract class MySqlParent {
-
-    protected abstract String[] getCreateStatements();
-
-    void configureDatabase() throws ResponseException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : getCreateStatements()) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(String.format("Error: Unable to configure database: %s", ex.getMessage()), 400);
-        }
-    }
+public class MySqlParent {
 
     int executeUpdate(String statement, Object... params) throws ResponseException, DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {

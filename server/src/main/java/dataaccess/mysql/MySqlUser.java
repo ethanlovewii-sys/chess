@@ -14,8 +14,7 @@ import java.sql.SQLException;
 
 public class MySqlUser extends MySqlParent implements UserDAO {
 
-    public MySqlUser() throws ResponseException, DataAccessException {
-        configureDatabase();
+    public MySqlUser() {
     }
 
     public UserData getUser(String username) throws DataAccessException, ResponseException {
@@ -56,17 +55,4 @@ public class MySqlUser extends MySqlParent implements UserDAO {
         }
     }
 
-    @Override
-    protected String[] getCreateStatements() {
-        return new String[]{
-                """
-            CREATE TABLE IF NOT EXISTS  users (
-              `username` VARCHAR(255) NOT NULL,
-              `password` VARCHAR(255) NOT NULL,
-              `email` VARCHAR(255) NOT NULL,
-              PRIMARY KEY (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-        };
-    }
 }

@@ -7,6 +7,7 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
 import server.ResponseException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,8 +17,7 @@ import java.util.List;
 
 public class MySqlGame extends MySqlParent implements GameDAO {
 
-    public MySqlGame() throws ResponseException, DataAccessException {
-        configureDatabase();
+    public MySqlGame() {
     }
 
     public int createGame(String gameName) throws ResponseException, DataAccessException {
@@ -115,19 +115,4 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         }
     }
 
-    @Override
-    protected String[] getCreateStatements() {
-        return new String[]{
-                """
-            CREATE TABLE IF NOT EXISTS  games (
-              `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` VARCHAR(255),
-              `blackUsername` VARCHAR(255),
-              `gameName` VARCHAR(255),
-              gameState JSON,
-              PRIMARY KEY (`gameID`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-        };
-    }
 }
