@@ -76,7 +76,7 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
-    private static final String[] statements = {
+    private static final String[] STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
               `authToken` VARCHAR(255) NOT NULL,
@@ -107,7 +107,7 @@ public class DatabaseManager {
     public static void configureDatabase() throws ResponseException, DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : statements) {
+            for (String statement : STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
