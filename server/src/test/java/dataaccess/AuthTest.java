@@ -1,6 +1,6 @@
 package dataaccess;
 
-import dataaccess.mySql.MySqlAuth;
+import dataaccess.mysql.MySqlAuth;
 import model.AuthData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
