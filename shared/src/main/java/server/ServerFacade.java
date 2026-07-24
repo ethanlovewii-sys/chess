@@ -57,12 +57,24 @@ public class ServerFacade {
 
             //Check for success
             var status = http.getResponseCode();
+
             if (status != HttpURLConnection.HTTP_OK) {
-                throw new ResponseException("failure: " + status, status);
+                String message = "Unknown error";
+
+                try (InputStream errorStream = http.getErrorStream()) {
+                    if (errorStream != null) {
+                        InputStreamReader reader = new InputStreamReader(errorStream);
+
+                        ErrorResult error = new Gson().fromJson(reader, ErrorResult.class);
+                        message = error.getMessage();
+                    }
+                }
+
+                throw new ResponseException(message, status);
             }
 
             //read Body
-            if (http.getContentLength() < 0) {
+            if (http.getContentLength() > 0) {
                 try (InputStream reqBody = http.getInputStream()) {
                     InputStreamReader reader = new InputStreamReader(reqBody);
                     if (responseType != null){
@@ -70,8 +82,11 @@ public class ServerFacade {
                     }
                 }
             }
-            throw new ResponseException("failure: " + status, status);
-        } catch (Exception ex) {
+            return null;
+        } catch (ResponseException ex) {
+            throw ex;
+        }
+        catch(Exception ex) {
             throw new ResponseException(ex.getMessage(), 500);
         }
     }

@@ -15,6 +15,7 @@ public class PreGameClient {
                 case "list" -> listGames();
                 case "join" -> joinGame();
                 case "observe" -> observeGame(params);
+                case "quit" -> "quit";
                 default -> help();
             };
         } catch (Exception ex) {
@@ -44,6 +45,7 @@ public class PreGameClient {
 
     private static String help() {
         return """
+                logout
                 create <NAME> - creates a game
                 list - lists all games
                 join <ID> [WHITE|BLACK] - joins a game

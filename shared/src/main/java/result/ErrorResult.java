@@ -1,7 +1,7 @@
 package result;
 
 public class ErrorResult {
-    private String message;
+    public String message;
 
     public ErrorResult(String message) {
         this.message = message;
@@ -10,4 +10,5 @@ public class ErrorResult {
     public String getMessage() {
         return message;
     }
+
 }
