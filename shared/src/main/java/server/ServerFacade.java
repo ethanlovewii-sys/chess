@@ -23,7 +23,7 @@ public class ServerFacade {
         return this.makeRequest("POST", "/session", request, LoginResult.class);
     }
 
-    public RegisterResult register(LoginRequest request) throws ResponseException {
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
         return this.makeRequest("POST", "/user", request, RegisterResult.class);
     }
 

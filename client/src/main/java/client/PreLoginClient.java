@@ -1,8 +1,19 @@
 package client;
 
+import request.*;
+import result.*;
+import server.ResponseException;
+import server.ServerFacade;
+
 import java.util.Arrays;
 
 public class PreLoginClient {
+    private static ServerFacade server = null;
+
+    public PreLoginClient(String serverUrl) {
+        server = new ServerFacade(serverUrl);
+    }
+
     public static String eval(String input) {
         try {
             String[] tokens = input.toLowerCase().split(" ");
@@ -29,8 +40,12 @@ public class PreLoginClient {
                 """;
     }
 
-    private static String register(String[] params) {
-        return null;
+    private static String register(String[] params) throws ResponseException {
+        if (params.length < 3) {
+            System.err.println("Must include Username, Password, and Email");
+        }
+        RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
+        return "Registered new user:" + result.username();
     }
 
     private static String login(String[] params) {
