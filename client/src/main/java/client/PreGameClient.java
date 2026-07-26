@@ -105,7 +105,7 @@ public class PreGameClient {
 
         System.out.print(assembleInitialBoard(colorToJoin));
 
-        return new ClientResult("Joined game number " + params[0], "InGame");
+        return new ClientResult("Joined game number " + params[0], null);
     }
 
     private static String assembleInitialBoard(ChessGame.TeamColor colorToJoin) {
@@ -115,7 +115,7 @@ public class PreGameClient {
 
         stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
 
-        if(colorToJoin == ChessGame.TeamColor.WHITE) {
+        if (colorToJoin == ChessGame.TeamColor.WHITE) {
             for (char letter = 'a'; letter <= 'h'; letter++) {
                 stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
             }
@@ -153,7 +153,7 @@ public class PreGameClient {
         }
 
         stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
-        if(colorToJoin == ChessGame.TeamColor.WHITE) {
+        if (colorToJoin == ChessGame.TeamColor.WHITE) {
             for (char letter = 'a'; letter <= 'h'; letter++) {
                 stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
             }
@@ -188,7 +188,8 @@ public class PreGameClient {
         }
         int gameNumber = Integer.parseInt(params[0]);
         int gameID = gameNumbering.get(gameNumber).gameID();
-        return new ClientResult("Observing game " + params[0] + ", With the GameID of " + gameID, "InGame");
+        System.out.print(assembleInitialBoard(ChessGame.TeamColor.WHITE));
+        return new ClientResult("Observing game " + params[0] + ", With the GameID of " + gameID, null);
     }
 
     private static ClientResult help() {

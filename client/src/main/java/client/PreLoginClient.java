@@ -2,7 +2,6 @@ package client;
 
 import request.*;
 import result.*;
-import server.ResponseException;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -41,7 +40,7 @@ public class PreLoginClient {
                 """, null);
     }
 
-    private static ClientResult register(String[] params) throws ResponseException {
+    private static ClientResult register(String[] params) throws server.ResponseException {
         if (params.length < 3) {
             System.err.println("Must include Username, Password, and Email");
         }
@@ -49,7 +48,7 @@ public class PreLoginClient {
         return new ClientResult("Registered new user:" + result.username(), "LoggedIn");
     }
 
-    private static ClientResult login(String[] params) throws ResponseException {
+    private static ClientResult login(String[] params) throws server.ResponseException {
         if (params.length < 2) {
             System.err.println("Must include Username, and Password");
         }
