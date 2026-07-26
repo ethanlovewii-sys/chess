@@ -101,7 +101,12 @@ public class PreGameClient {
     }
 
     private static ClientResult observeGame(String[] params) {
-        return null;
+        if (params.length < 1) {
+            System.err.println("Must include the game number you want to observe.");
+        }
+        int gameNumber = Integer.parseInt(params[0]);
+        int gameID = gameNumbering.get(gameNumber).gameID();
+        return new ClientResult("Observing game " + params[0] + ", With the GameID of " + gameID, "InGame");
     }
 
     private static ClientResult help() {

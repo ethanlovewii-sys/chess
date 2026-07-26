@@ -141,4 +141,17 @@ public class ServerFacadeTests {
         });
     }
 
+    @Test
+    public void goodClear() throws ResponseException {
+        facade.createGame(new CreateGameRequest("newGame"));
+        facade.createGame(new CreateGameRequest("newGame2"));
+        facade.clear();
+        assertThrows(ResponseException.class, () -> {
+            facade.listGames();
+        });
+        facade.register(new RegisterRequest("existingUser", "password", "email"));
+        ListGamesResult result = facade.listGames();
+        assertEquals(0, result.games().size());
+    }
+
 }
