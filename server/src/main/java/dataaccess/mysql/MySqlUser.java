@@ -5,7 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
 import model.UserData;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

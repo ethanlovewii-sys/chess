@@ -2,7 +2,7 @@ package dataaccess.mysql;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

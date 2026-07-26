@@ -7,11 +7,9 @@ import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.*;
-import server.ResponseException;
+import exception.ResponseException;
 import server.Server;
-import server.ServerFacade;
-
-import java.util.List;
+import sharedserver.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
 

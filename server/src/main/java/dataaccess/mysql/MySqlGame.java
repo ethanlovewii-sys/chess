@@ -6,7 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

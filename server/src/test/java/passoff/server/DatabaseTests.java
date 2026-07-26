@@ -4,7 +4,7 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
-import server.ResponseException;
+import exception.ResponseException;
 import server.Server;
 
 import java.lang.reflect.Method;

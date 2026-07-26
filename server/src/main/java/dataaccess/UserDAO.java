@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.UserData;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.SQLException;
 

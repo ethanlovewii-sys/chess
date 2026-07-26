@@ -10,7 +10,7 @@ import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.util.UUID;
 

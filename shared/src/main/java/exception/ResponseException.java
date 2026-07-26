@@ -1,4 +1,4 @@
-package server;
+package exception;
 
 //General exception class for responses that holds a message and status code
 public class ResponseException extends Exception {

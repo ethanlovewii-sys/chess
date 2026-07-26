@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import model.AuthData;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

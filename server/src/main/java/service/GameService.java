@@ -11,7 +11,7 @@ import request.CreateGameRequest;
 import request.JoinGameRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
-import server.ResponseException;
+import exception.ResponseException;
 
 import java.sql.SQLException;
 

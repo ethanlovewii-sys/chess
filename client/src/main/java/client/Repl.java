@@ -1,11 +1,9 @@
 package client;
 
 import result.ClientResult;
-import server.ServerFacade;
+import sharedserver.ServerFacade;
 
 import java.util.Scanner;
-
-import static ui.EscapeSequences.*;
 
 
 public class Repl {
