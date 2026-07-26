@@ -8,8 +8,7 @@ import server.ResponseException;
 import server.Server;
 import server.ServerFacade;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -63,6 +62,23 @@ public class ServerFacadeTests {
         });
         assertThrows(ResponseException.class, () -> {
             facade.login(new LoginRequest("existingUser", null));
+        });
+    }
+
+    @Test
+    public void goodLogout() throws ResponseException {
+        facade.listGames();
+        facade.logout();
+        assertThrows(ResponseException.class, () -> {
+            facade.listGames();
+        });
+    }
+
+    @Test
+    public void badLogout() throws ResponseException {
+        facade.logout();
+        assertThrows(ResponseException.class, () -> {
+            facade.logout();
         });
     }
 

@@ -8,13 +8,14 @@ import server.ServerFacade;
 import java.util.Arrays;
 
 public class PreLoginClient {
+
     private static ServerFacade server = null;
 
     public PreLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
     }
 
-    public static String eval(String input) {
+    public static ClientResult eval(String input) {
         try {
             String[] tokens = input.toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -23,36 +24,36 @@ public class PreLoginClient {
             return switch (cmd) {
                 case "login" -> login(params);
                 case "register" -> register(params);
-                case "quit" -> "quit";
+                case "quit" -> new ClientResult("quit", null);
                 default -> help();
             };
         } catch (Exception ex) {
-            return ex.getMessage();
+            return new ClientResult(ex.getMessage(), null);
         }
     }
 
-    private static String help() {
-        return """
+    private static ClientResult help() {
+        return new ClientResult("""
                 register <USERNAME> <PASSWORD> <EMAIL>
                 login <USERNAME> <PASSWORD>
                 quit
                 help - display possible commands
-                """;
+                """, null);
     }
 
-    private static String register(String[] params) throws ResponseException {
+    private static ClientResult register(String[] params) throws ResponseException {
         if (params.length < 3) {
             System.err.println("Must include Username, Password, and Email");
         }
         RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
-        return "Registered new user:" + result.username();
+        return new ClientResult("Registered new user:" + result.username(), "LoggedIn");
     }
 
-    private static String login(String[] params) throws ResponseException {
+    private static ClientResult login(String[] params) throws ResponseException {
         if (params.length < 2) {
             System.err.println("Must include Username, and Password");
         }
         LoginResult result = server.login(new LoginRequest(params[0], params[1]));
-        return "Logged in user:" + result.username();
+        return new ClientResult("Logged in user:" + result.username(), "LoggedIn");
     }
 }

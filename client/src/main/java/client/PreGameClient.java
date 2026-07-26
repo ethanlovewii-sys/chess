@@ -1,50 +1,64 @@
 package client;
 
+import request.*;
+import result.*;
+import server.ResponseException;
+import server.ServerFacade;
+
 import java.util.Arrays;
 
 public class PreGameClient {
-    public static String eval(String input) {
+
+    private static ServerFacade server = null;
+
+    public PreGameClient(String serverUrl) {
+        server = new ServerFacade(serverUrl);
+    }
+
+    public static ClientResult eval(String input) {
         try {
             String[] tokens = input.toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             //Pulls the parameters away from the command
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "logout" -> logout(params);
+                case "logout" -> logout();
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame();
                 case "observe" -> observeGame(params);
-                case "quit" -> "quit";
+                case "quit" -> new ClientResult("quit", null);
                 default -> help();
             };
         } catch (Exception ex) {
-            return ex.getMessage();
+            return new ClientResult(ex.getMessage(), null);
         }
     }
 
-    private static String logout(String[] params) {
+    private static ClientResult logout() throws ResponseException {
+        server.logout();
+        return new ClientResult("Logout successful", "LoggedOut");
+    }
+
+    private static ClientResult createGame(String[] params) {
         return null;
     }
 
-    private static String createGame(String[] params) {
+    private static ClientResult listGames() throws ResponseException {
+        ListGamesResult result = server.listGames();
+        return new ClientResult("List of games", null);
+    }
+
+    private static ClientResult joinGame() {
         return null;
     }
 
-    private static String listGames() {
+    private static ClientResult observeGame(String[] params) {
         return null;
     }
 
-    private static String joinGame() {
-        return null;
-    }
-
-    private static String observeGame(String[] params) {
-        return null;
-    }
-
-    private static String help() {
-        return """
+    private static ClientResult help() {
+        return new ClientResult("""
                 logout
                 create <NAME> - creates a game
                 list - lists all games
@@ -52,6 +66,6 @@ public class PreGameClient {
                 observe <ID> - watch a game
                 quit
                 help - displays all possible commands
-                """;
+                """, null);
     }
 }

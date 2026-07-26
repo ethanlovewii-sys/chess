@@ -14,17 +14,27 @@ import java.net.URL;
 public class ServerFacade {
 
     private final String serverUrl;
+    private String authToken;
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
-        return this.makeRequest("POST", "/session", request, LoginResult.class);
+        LoginResult result = this.makeRequest("POST", "/session", request, LoginResult.class);
+        authToken = result.authToken();
+        return result;
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
-        return this.makeRequest("POST", "/user", request, RegisterResult.class);
+        RegisterResult result = this.makeRequest("POST", "/user", request, RegisterResult.class);
+        authToken = result.authToken();
+        return result;
+    }
+
+    public void logout() throws ResponseException {
+        this.makeRequest("DELETE", "/session", null, null);
+        authToken = null;
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
@@ -51,6 +61,9 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             //Write body
+            if (authToken != null) {
+                http.setRequestProperty("Authorization", authToken);
+            }
             if(request != null) {
                 http.setRequestProperty("Content-Type", "application/json");
                 String reqData = new Gson().toJson(request);
