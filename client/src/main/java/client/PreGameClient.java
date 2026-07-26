@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 import request.*;
 import result.*;
@@ -7,10 +9,13 @@ import server.ResponseException;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PreGameClient {
 
     private static ServerFacade server = null;
+    private static Map<Integer, GameData> gameNumbering = new HashMap<>();
 
     public PreGameClient(ServerFacade server) {
         PreGameClient.server = server;
@@ -26,7 +31,7 @@ public class PreGameClient {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                case "join" -> joinGame();
+                case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "quit" -> new ClientResult("quit", null);
                 default -> help();
@@ -56,6 +61,7 @@ public class PreGameClient {
         }
         String gameList = "";
         int counter = 1;
+        gameNumbering = new HashMap<>();
         for (GameData game : result.games()){
             String whitePlayer = game.whiteUsername();
             String blackPlayer = game.blackUsername();
@@ -66,13 +72,32 @@ public class PreGameClient {
                 blackPlayer = "awaiting player";
             }
             gameList += counter + " - " + game.gameName() + " - White: " + whitePlayer + " - Black: " + blackPlayer + "\n";
+
+            gameNumbering.put(counter, game);
+
             counter++;
         }
         return new ClientResult(gameList, null);
     }
 
-    private static ClientResult joinGame() {
-        return null;
+    private static ClientResult joinGame(String[] params) throws ResponseException {
+        if (params.length < 2) {
+            System.err.println("Must include the game number and what color you'd like to be.");
+        }
+        int gameNumber = Integer.parseInt(params[0]);
+        int gameID = gameNumbering.get(gameNumber).gameID();
+
+        ChessGame.TeamColor colorToJoin = null;
+        if  (params[1].equals("white")) {
+            colorToJoin = ChessGame.TeamColor.WHITE;
+        } else if (params[1].equals("black")) {
+            colorToJoin = ChessGame.TeamColor.BLACK;
+        } else {
+            System.err.println("Invalid game color. Must choose White or Black.");
+        }
+
+        server.joinGame(new JoinGameRequest(colorToJoin, gameID));
+        return new ClientResult("Joined game number " + params[0], "InGame");
     }
 
     private static ClientResult observeGame(String[] params) {

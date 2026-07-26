@@ -1,13 +1,17 @@
 package client;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.*;
 import server.ResponseException;
 import server.Server;
 import server.ServerFacade;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,6 +121,23 @@ public class ServerFacadeTests {
         facade.logout();
         assertThrows(ResponseException.class, () -> {
             facade.listGames();
+        });
+    }
+
+    @Test
+    public void goodJoinGame() throws ResponseException {
+        CreateGameResult gameResult = facade.createGame(new CreateGameRequest("game1"));
+        facade.listGames();
+        facade.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, gameResult.gameID()));
+        ListGamesResult result = facade.listGames();
+        assertEquals("existingUser", result.games().getFirst().whiteUsername());
+        assertNull(result.games().getFirst().blackUsername());
+    }
+
+    @Test
+    public void badJoinGame() throws ResponseException {
+        assertThrows(ResponseException.class, () -> {
+            facade.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, 1));
         });
     }
 
