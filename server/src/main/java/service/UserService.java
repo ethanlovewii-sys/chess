@@ -30,10 +30,10 @@ public class UserService {
         UserData user = userDAO.getUser(username);
 
         if (user != null) {
-            throw new ResponseException("Error: already taken", 403);
+            throw new ResponseException("Error: Username already taken", 403);
         }
         if (username == null || password == null || email == null) {
-            throw new ResponseException("Error: bad request", 400);
+            throw new ResponseException("Error: must include username, password, and email", 400);
         }
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         userDAO.createUser(username, hashedPassword, email);
@@ -48,17 +48,16 @@ public class UserService {
         String password = request.password();
 
         if (username == null || password == null) {
-            throw new ResponseException("Error: bad request", 400);
+            throw new ResponseException("Error: must include username, and password", 400);
         }
 
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         UserData user = userDAO.getUser(username);
 
         if (user == null) {
-            throw new ResponseException("Error: unauthorized", 401);
+            throw new ResponseException("Error: Unable to retrieve user, try again", 401);
         }
         if (!BCrypt.checkpw(password, user.password())) {
-            throw new ResponseException("Error: unauthorized", 401);
+            throw new ResponseException("Error: Incorrect password", 401);
         }
 
         String authToken = UUID.randomUUID().toString();
@@ -71,7 +70,7 @@ public class UserService {
         AuthData authData = authDAO.getAuthData(authToken);
 
         if (authData == null) {
-            throw new ResponseException("Error: unauthorized", 401);
+            throw new ResponseException("Error: User to logout wasn't found", 401);
         }
 
         authDAO.deleteAuth(authToken);

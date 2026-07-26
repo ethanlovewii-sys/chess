@@ -4,17 +4,14 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import model.AuthData;
 import model.GameData;
 import request.*;
 import result.*;
 import server.ResponseException;
 import server.ServerFacade;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import static ui.EscapeSequences.*;
 
 public class PreGameClient {
@@ -39,7 +36,9 @@ public class PreGameClient {
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "quit" -> new ClientResult("quit", null);
-                default -> help();
+                case "help" -> help();
+                default ->
+                        new ClientResult("Unrecognized Command: " + cmd + ". Type \"help\" for a list of available commands.", null);
             };
         } catch (Exception ex) {
             return new ClientResult(ex.getMessage(), null);
@@ -55,8 +54,8 @@ public class PreGameClient {
         if (params.length < 1) {
             System.err.println("Must include the Name for your Game.");
         }
-        CreateGameResult result = server.createGame(new CreateGameRequest(params[0]));
-        return new ClientResult("Game: " + result.gameID() + " created", null);
+        server.createGame(new CreateGameRequest(params[0]));
+        return new ClientResult("Game: " + params[0] + " created", null);
     }
 
     private static ClientResult listGames() throws ResponseException {

@@ -24,7 +24,8 @@ public class PreLoginClient {
                 case "login" -> login(params);
                 case "register" -> register(params);
                 case "quit" -> new ClientResult("quit", null);
-                default -> help();
+                case "help" -> help();
+                default -> new ClientResult("Unrecognized Command: " + cmd + ". Type \"help\" for a list of available commands.", null);
             };
         } catch (Exception ex) {
             return new ClientResult(ex.getMessage(), null);
