@@ -39,6 +39,10 @@ public class ServerFacade {
         this.makeRequest("PUT", "/game", request, null);
     }
 
+    public void clear() throws ResponseException {
+        this.makeRequest("DELETE", "/db", null, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseType) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

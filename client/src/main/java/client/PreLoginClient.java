@@ -48,7 +48,11 @@ public class PreLoginClient {
         return "Registered new user:" + result.username();
     }
 
-    private static String login(String[] params) {
-        return null;
+    private static String login(String[] params) throws ResponseException {
+        if (params.length < 2) {
+            System.err.println("Must include Username, and Password");
+        }
+        LoginResult result = server.login(new LoginRequest(params[0], params[1]));
+        return "Logged in user:" + result.username();
     }
 }
