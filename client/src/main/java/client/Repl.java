@@ -1,6 +1,7 @@
 package client;
 
 import result.ClientResult;
+import server.ServerFacade;
 
 import java.util.Scanner;
 
@@ -12,17 +13,18 @@ public class Repl {
     String state = "LoggedOut";
     private final PreLoginClient preLoginClient;
     private final PreGameClient preGameClient;
+    private ServerFacade server;
 
     public Repl(String serverUrl) {
-        preLoginClient = new PreLoginClient(serverUrl);
-        preGameClient = new PreGameClient(serverUrl);
+        server = new ServerFacade(serverUrl);
+        preLoginClient = new PreLoginClient(server);
+        preGameClient = new PreGameClient(server);
     }
 
     public void run() {
-        System.out.println(" Welcome to Chess. Sign in to start.");
-
+        System.out.println(" Welcome to Chess. use 'help' for a list of commands.");
         Scanner scanner = new Scanner(System.in);
-        ClientResult result = null;
+        ClientResult result = new ClientResult("", null);
         while (!result.message().equals("quit")) {
             //Print prompt
             System.out.print("\n" + state + " >>> ");
@@ -33,8 +35,8 @@ public class Repl {
                     case "LoggedIn" -> result = preGameClient.eval(line);
                     case "InGame" -> result = InGameClient.eval(line);
                 }
-                System.out.print(result.message());
-                if (!result.nextState().equals(null)) {
+                System.out.print("\n" + result.message());
+                if (!(result.nextState() == null)) {
                     state = result.nextState();
                 }
             } catch (Throwable e) {

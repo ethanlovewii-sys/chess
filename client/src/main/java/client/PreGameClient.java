@@ -12,8 +12,8 @@ public class PreGameClient {
 
     private static ServerFacade server = null;
 
-    public PreGameClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+    public PreGameClient(ServerFacade server) {
+        PreGameClient.server = server;
     }
 
     public static ClientResult eval(String input) {
@@ -51,10 +51,21 @@ public class PreGameClient {
 
     private static ClientResult listGames() throws ResponseException {
         ListGamesResult result = server.listGames();
+        if (result.games().isEmpty()) {
+            return new ClientResult("No Games have been created. Use create <Game_Name> to create one", null);
+        }
         String gameList = "";
         int counter = 1;
         for (GameData game : result.games()){
-            gameList += counter + " - " + game.gameName() + " - White: " + game.whiteUsername() + " - Black: " + game.blackUsername() + "\n";
+            String whitePlayer = game.whiteUsername();
+            String blackPlayer = game.blackUsername();
+            if (game.whiteUsername() == null){
+                whitePlayer = "awaiting player";
+            }
+            if (game.blackUsername() == null){
+                blackPlayer = "awaiting player";
+            }
+            gameList += counter + " - " + game.gameName() + " - White: " + whitePlayer + " - Black: " + blackPlayer + "\n";
             counter++;
         }
         return new ClientResult(gameList, null);

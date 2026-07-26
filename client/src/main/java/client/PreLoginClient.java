@@ -11,8 +11,8 @@ public class PreLoginClient {
 
     private static ServerFacade server = null;
 
-    public PreLoginClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+    public PreLoginClient(ServerFacade server) {
+        PreLoginClient.server = server;
     }
 
     public static ClientResult eval(String input) {
