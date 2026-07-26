@@ -103,4 +103,21 @@ public class ServerFacadeTests {
         });
     }
 
+    @Test
+    public void goodListGames() throws ResponseException {
+        facade.createGame(new CreateGameRequest("game1"));
+        facade.createGame(new CreateGameRequest("game2"));
+        facade.createGame(new CreateGameRequest("game3"));
+        ListGamesResult result = facade.listGames();
+        assertEquals(3, result.games().size());
+    }
+
+    @Test
+    public void badListGames() throws ResponseException {
+        facade.logout();
+        assertThrows(ResponseException.class, () -> {
+            facade.listGames();
+        });
+    }
+
 }

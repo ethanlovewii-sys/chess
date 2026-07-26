@@ -1,5 +1,6 @@
 package client;
 
+import model.GameData;
 import request.*;
 import result.*;
 import server.ResponseException;
@@ -50,8 +51,13 @@ public class PreGameClient {
 
     private static ClientResult listGames() throws ResponseException {
         ListGamesResult result = server.listGames();
-        String message = "";
-        return new ClientResult("List of games", null);
+        String gameList = "";
+        int counter = 1;
+        for (GameData game : result.games()){
+            gameList += counter + " - " + game.gameName() + " - White: " + game.whiteUsername() + " - Black: " + game.blackUsername() + "\n";
+            counter++;
+        }
+        return new ClientResult(gameList, null);
     }
 
     private static ClientResult joinGame() {
