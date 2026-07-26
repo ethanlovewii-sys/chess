@@ -40,12 +40,17 @@ public class PreGameClient {
         return new ClientResult("Logout successful", "LoggedOut");
     }
 
-    private static ClientResult createGame(String[] params) {
-        return null;
+    private static ClientResult createGame(String[] params) throws ResponseException {
+        if (params.length < 1) {
+            System.err.println("Must include the Name for your Game.");
+        }
+        CreateGameResult result = server.createGame(new CreateGameRequest(params[0]));
+        return new ClientResult("Game: " + result.gameID() + " created", null);
     }
 
     private static ClientResult listGames() throws ResponseException {
         ListGamesResult result = server.listGames();
+        String message = "";
         return new ClientResult("List of games", null);
     }
 
