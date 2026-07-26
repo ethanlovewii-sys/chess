@@ -1,5 +1,6 @@
 package client;
 
+import exception.ResponseException;
 import request.*;
 import result.*;
 import sharedserver.ServerFacade;

@@ -1,6 +1,7 @@
 package sharedserver;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.*;
 import result.*;
 
