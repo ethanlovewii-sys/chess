@@ -5,6 +5,7 @@ import dataaccess.*;
 import dataaccess.mysql.MySqlAuth;
 import dataaccess.mysql.MySqlGame;
 import dataaccess.mysql.MySqlUser;
+import exception.ResponseException;
 import io.javalin.*;
 import result.ErrorResult;
 import server.handler.GameHandler;
