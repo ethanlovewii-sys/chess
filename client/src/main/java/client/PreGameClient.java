@@ -52,7 +52,7 @@ public class PreGameClient {
 
     private static ClientResult createGame(String[] params) throws ResponseException {
         if (params.length < 1) {
-            System.err.println("Must include the Name for your Game.");
+            return new ClientResult("Must include the Name for your Game.", null);
         }
         server.createGame(new CreateGameRequest(params[0]));
         return new ClientResult("Game: " + params[0] + " created", null);
@@ -86,9 +86,18 @@ public class PreGameClient {
 
     private static ClientResult joinGame(String[] params) throws ResponseException {
         if (params.length < 2) {
-            System.err.println("Must include the game number and what color you'd like to be.");
+            return new ClientResult("Must include the game number and what color you'd like to be.",  null);
         }
-        int gameNumber = Integer.parseInt(params[0]);
+        int gameNumber = 0;
+        try {
+            gameNumber = Integer.parseInt(params[0]);
+        } catch (Exception ex) {
+            return new ClientResult("Use the numeric version to join a game, ex: 1 3 5 ect.", null);
+        }
+        if (!gameNumbering.containsKey(gameNumber)) {
+            return new ClientResult("Invalid game number. Use 'list' to see available games.", null);
+        }
+
         int gameID = gameNumbering.get(gameNumber).gameID();
 
         ChessGame.TeamColor colorToJoin = null;
@@ -97,7 +106,7 @@ public class PreGameClient {
         } else if (params[1].equals("black")) {
             colorToJoin = ChessGame.TeamColor.BLACK;
         } else {
-            System.err.println("Invalid game color. Must choose White or Black.");
+            return new ClientResult("Invalid game color. Must choose White or Black.", null);
         }
 
         server.joinGame(new JoinGameRequest(colorToJoin, gameID));
@@ -183,12 +192,19 @@ public class PreGameClient {
 
     private static ClientResult observeGame(String[] params) {
         if (params.length < 1) {
-            System.err.println("Must include the game number you want to observe.");
+            return new ClientResult("Must include the game number you want to observe.", null);
         }
-        int gameNumber = Integer.parseInt(params[0]);
-        int gameID = gameNumbering.get(gameNumber).gameID();
+        int gameNumber = 0;
+        try {
+            gameNumber = Integer.parseInt(params[0]);
+        } catch (Exception ex) {
+            return new ClientResult("Use the numeric version to join a game, ex: 1 3 5 ect.", null);
+        }
+        if (!gameNumbering.containsKey(gameNumber)) {
+            return new ClientResult("Invalid game number. Use 'list' to see available games.", null);
+        }
         System.out.print(assembleInitialBoard(ChessGame.TeamColor.WHITE));
-        return new ClientResult("Observing game " + params[0] + ", With the GameID of " + gameID, null);
+        return new ClientResult("Observing game " + params[0], null);
     }
 
     private static ClientResult help() {

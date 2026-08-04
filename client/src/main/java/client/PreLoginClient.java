@@ -44,7 +44,7 @@ public class PreLoginClient {
 
     private static ClientResult register(String[] params) throws ResponseException {
         if (params.length < 3) {
-            System.err.println("Must include Username, Password, and Email");
+            return new ClientResult("Must include Username, Password, and Email", null);
         }
         RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
         return new ClientResult("Registered new user:" + result.username(), "LoggedIn");
@@ -52,7 +52,7 @@ public class PreLoginClient {
 
     private static ClientResult login(String[] params) throws ResponseException {
         if (params.length < 2) {
-            System.err.println("Must include Username, and Password");
+            return new ClientResult("Must include Username, and Password", null);
         }
         LoginResult result = server.login(new LoginRequest(params[0], params[1]));
         return new ClientResult("Logged in user:" + result.username(), "LoggedIn");
