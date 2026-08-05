@@ -17,4 +17,7 @@ public interface GameDAO {
     List<GameData> listGames() throws DataAccessException, SQLException;
 
     void deleteAll() throws ResponseException, DataAccessException, SQLException;
+
+    void updateGame(ChessGame game, int gameID) throws ResponseException, DataAccessException;
+
 }

@@ -1,7 +1,9 @@
 package server.websocket;
 
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import exception.ResponseException;
 import io.javalin.websocket.*;
@@ -10,6 +12,7 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
+import websocket.commands.*;
 
 import java.io.IOException;
 
@@ -18,6 +21,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final ConnectionManager connections = new ConnectionManager();
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
+    private final Gson gson = new Gson();
+
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -31,11 +36,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(WsMessageContext ctx) throws ResponseException, IOException {
+    public void handleMessage(WsMessageContext ctx) throws ResponseException, IOException, InvalidMoveException, DataAccessException {
         UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(ctx.session, command.getAuthToken(), command.getGameID());
-            case MAKE_MOVE -> makeMove(ctx.session);
+            case MAKE_MOVE -> {
+                MakeMoveCommand moveCommand = gson.fromJson(ctx.message(), MakeMoveCommand.class);
+                makeMove(ctx.session, moveCommand.getMove(), moveCommand.getAuthToken(), moveCommand.getGameID());
+            }
             case LEAVE -> leave(ctx.session);
             case RESIGN -> resign(ctx.session);
         }
@@ -47,8 +55,52 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leave(Session session) {
     }
 
-    private void makeMove(Session session) {
+    private void makeMove(Session session, ChessMove move, String authToken, int gameID) throws ResponseException, IOException, InvalidMoveException, DataAccessException {
+        ChessPosition startPosition = move.getStartPosition();
+        GameData gameData = gameDAO.getGame(gameID);
+        AuthData authData = authDAO.getAuthData(authToken);
+        ChessGame game = gameData.game();
+        ChessPiece piece = game.getBoard().getPiece(startPosition);
 
+        if (!game.validMoves(startPosition).contains(move)) {
+            ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        game.makeMove(move);
+        gameDAO.updateGame(game, gameID);
+
+        LoadGameMessage loadGame = new LoadGameMessage(game);
+        ConnectionManager.broadcast(gameID, null, loadGame);
+
+        ChessPosition endPosition = move.getEndPosition();
+        NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.toString() + " to " + endPosition.toString());
+        ConnectionManager.broadcast(gameID, authData.username(), notification);
+
+
+        ChessGame.TeamColor enemyColor;
+        ChessGame.TeamColor teamColor;
+        if (authData.username().equals(gameData.whiteUsername())) {
+            teamColor = ChessGame.TeamColor.WHITE;
+            enemyColor = ChessGame.TeamColor.BLACK;
+        } else {
+            teamColor = ChessGame.TeamColor.BLACK;
+            enemyColor = ChessGame.TeamColor.WHITE;
+        }
+        if (game.isInCheck(enemyColor)){
+            NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
+            ConnectionManager.broadcast(gameID, null, checkNotification);
+        }
+        if (game.isInCheckmate(enemyColor)){
+            NotificationMessage mateNotification = new NotificationMessage(enemyColor + " is in CheckMate! " + teamColor + " Wins!!");
+            ConnectionManager.broadcast(gameID, null, mateNotification);
+        }
+        if (game.isInStalemate(enemyColor)){
+            NotificationMessage staleNotification = new NotificationMessage(enemyColor + " has no viable moves. Stalemate! It's a tie.");
+            ConnectionManager.broadcast(gameID, null, staleNotification);
+        }
     }
 
     private void connect(Session session, String authToken, Integer gameId) throws ResponseException, IOException {

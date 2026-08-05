@@ -23,7 +23,7 @@ public class ConnectionManager {
         connections.get(gameId).remove(session);
     }
 
-    public static void broadcast(int gameId, String excludedUsername, NotificationMessage message) throws IOException {
+    public static void broadcast(int gameId, String excludedUsername, ServerMessage message) throws IOException {
         String json = new Gson().toJson(message);
         var gameConnections = connections.get(gameId);
 

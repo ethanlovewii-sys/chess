@@ -40,4 +40,9 @@ public class MemoryGameDAO implements GameDAO {
     public void deleteAll() {
         games.clear();
     }
+
+    @Override
+    public void updateGame(ChessGame game, int gameID) {
+
+    }
 }

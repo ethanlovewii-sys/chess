@@ -115,4 +115,15 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         }
     }
 
+    @Override
+    public void updateGame(ChessGame game, int gameID) throws ResponseException, DataAccessException {
+        String statement = """
+        UPDATE games
+        SET gameState = ?
+        WHERE gameID = ?
+        """;
+        String jsonGameState = new Gson().toJson(game);
+        executeUpdate(statement, jsonGameState, gameID);
+    }
+
 }
