@@ -5,6 +5,7 @@ import client.ClientState;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import model.AuthData;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import client.Repl;
@@ -61,7 +62,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void makeMove(int gameID, ChessMove move) throws IOException {
-        UserGameCommand command = new UserGameCommand(MAKE_MOVE, ClientState.getAuthToken(), gameID);
+        MakeMoveCommand command = new MakeMoveCommand(ClientState.getAuthToken(), gameID, move);
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 

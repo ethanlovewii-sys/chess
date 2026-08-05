@@ -118,6 +118,7 @@ public class PreGameClient {
         webSocket = new WebSocketFacade();
         webSocket.setColorPerspective(colorToJoin);
         webSocket.connect(gameID);
+        ClientState.setGameID(gameID);
 
         return new ClientResult("Joined game number " + params[0], "InGame");
     }

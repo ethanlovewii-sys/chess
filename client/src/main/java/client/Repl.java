@@ -1,5 +1,6 @@
 package client;
 
+import client.websocket.WebSocketFacade;
 import result.ClientResult;
 import sharedserver.ServerFacade;
 
@@ -11,12 +12,16 @@ public class Repl {
     public static String state = "LoggedOut";
     private final PreLoginClient preLoginClient;
     private final PreGameClient preGameClient;
+    private final InGameClient inGameClient;
     private ServerFacade server;
+    private WebSocketFacade  webSocket;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl) throws Exception {
         server = new ServerFacade(serverUrl);
+        webSocket = new WebSocketFacade();
         preLoginClient = new PreLoginClient(server);
         preGameClient = new PreGameClient(server);
+        inGameClient = new InGameClient(webSocket);
     }
 
     public void run() {
@@ -31,7 +36,7 @@ public class Repl {
                 switch (state) {
                     case "LoggedOut" -> result = preLoginClient.eval(line);
                     case "LoggedIn" -> result = preGameClient.eval(line);
-                    case "InGame" -> result = InGameClient.eval(line);
+                    case "InGame" -> result = inGameClient.eval(line);
                 }
                 System.out.print("\n" + result.message());
                 if (!(result.nextState() == null)) {
