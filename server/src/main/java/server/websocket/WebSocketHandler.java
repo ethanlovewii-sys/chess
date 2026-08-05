@@ -62,6 +62,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame game = gameData.game();
         ChessPiece piece = game.getBoard().getPiece(startPosition);
 
+        if (authData == null) {
+            ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
         if (!game.validMoves(startPosition).contains(move)) {
             ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
             String json =  new Gson().toJson(errorMessage);
@@ -69,7 +76,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-        game.makeMove(move);
+        ChessGame.TeamColor enemyColor = null;
+        ChessGame.TeamColor teamColor = null;
+        if (authData.username().equals(gameData.whiteUsername())) {
+            teamColor = ChessGame.TeamColor.WHITE;
+            enemyColor = ChessGame.TeamColor.BLACK;
+        } else if (authData.username().equals(gameData.blackUsername())) {
+            teamColor = ChessGame.TeamColor.BLACK;
+            enemyColor = ChessGame.TeamColor.WHITE;
+        }
+        
+        if (teamColor == null){
+            ErrorMessage errorMessage = new ErrorMessage("Observers cannot make moves.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        if (piece.getTeamColor() != teamColor) {
+            ErrorMessage errorMessage = new ErrorMessage("You can only move your pieces.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        try{
+            game.makeMove(move);
+        } catch  (InvalidMoveException e) {
+            ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
         gameDAO.updateGame(game, gameID);
 
         LoadGameMessage loadGame = new LoadGameMessage(game);
@@ -79,25 +117,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.toString() + " to " + endPosition.toString());
         ConnectionManager.broadcast(gameID, authData.username(), notification);
 
-
-        ChessGame.TeamColor enemyColor;
-        ChessGame.TeamColor teamColor;
-        if (authData.username().equals(gameData.whiteUsername())) {
-            teamColor = ChessGame.TeamColor.WHITE;
-            enemyColor = ChessGame.TeamColor.BLACK;
-        } else {
-            teamColor = ChessGame.TeamColor.BLACK;
-            enemyColor = ChessGame.TeamColor.WHITE;
-        }
-        if (game.isInCheck(enemyColor)){
-            NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
-            ConnectionManager.broadcast(gameID, null, checkNotification);
-        }
         if (game.isInCheckmate(enemyColor)){
             NotificationMessage mateNotification = new NotificationMessage(enemyColor + " is in CheckMate! " + teamColor + " Wins!!");
             ConnectionManager.broadcast(gameID, null, mateNotification);
         }
-        if (game.isInStalemate(enemyColor)){
+        else if (game.isInCheck(enemyColor)){
+            NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
+            ConnectionManager.broadcast(gameID, null, checkNotification);
+        }
+        else if (game.isInStalemate(enemyColor)){
             NotificationMessage staleNotification = new NotificationMessage(enemyColor + " has no viable moves. Stalemate! It's a tie.");
             ConnectionManager.broadcast(gameID, null, staleNotification);
         }
