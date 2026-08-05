@@ -20,10 +20,10 @@ public class PreGameClient {
     private static ServerFacade server = null;
     private static WebSocketFacade webSocket = null;
     private static Map<Integer, GameData> gameNumbering = new HashMap<>();
+    private static String authToken;
 
-    public PreGameClient(ServerFacade server, WebSocketFacade webSocket) {
+    public PreGameClient(ServerFacade server) {
         PreGameClient.server = server;
-        PreGameClient.webSocket = webSocket;
     }
 
     public static ClientResult eval(String input) {
@@ -50,6 +50,7 @@ public class PreGameClient {
 
     private static ClientResult logout() throws ResponseException {
         server.logout();
+        ClientState.clear();
         return new ClientResult("Logout successful", "LoggedOut");
     }
 
@@ -87,7 +88,7 @@ public class PreGameClient {
         return new ClientResult(gameList, null);
     }
 
-    private static ClientResult joinGame(String[] params) throws ResponseException {
+    private static ClientResult joinGame(String[] params) throws Exception {
         if (params.length < 2) {
             return new ClientResult("Must include the game number and what color you'd like to be.",  null);
         }
@@ -113,7 +114,9 @@ public class PreGameClient {
         }
 
         server.joinGame(new JoinGameRequest(colorToJoin, gameID));
-        webSocket.co
+
+        webSocket = new WebSocketFacade();
+        webSocket.connect(gameID);
 
         System.out.print(assembleInitialBoard(colorToJoin));
 

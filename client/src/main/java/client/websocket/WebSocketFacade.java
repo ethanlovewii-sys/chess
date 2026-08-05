@@ -1,6 +1,7 @@
 package client.websocket;
 
 import chess.ChessMove;
+import client.ClientState;
 import com.google.gson.Gson;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Endpoint;
@@ -8,6 +9,7 @@ import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,27 +30,31 @@ public class WebSocketFacade extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         this.session = session;
-        session.addMessageHandler(String.class, message -> {
-
+        session.addMessageHandler(String.class, json -> {
+            ServerMessage message = gson.fromJson(json, ServerMessage.class);
         });
     }
-    public void connect(String authToken, int gameID) throws IOException {
-        UserGameCommand command = new UserGameCommand(CONNECT, authToken, gameID);
+    public void connect(int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(CONNECT, ClientState.getAuthToken(), gameID);
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 
-    public void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
-        UserGameCommand command = new UserGameCommand(MAKE_MOVE, authToken, gameID);
+    public void makeMove(int gameID, ChessMove move) throws IOException {
+        UserGameCommand command = new UserGameCommand(MAKE_MOVE, ClientState.getAuthToken(), gameID);
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 
-    public void resign(String authToken, int gameID) throws IOException {
-        UserGameCommand command = new UserGameCommand(RESIGN, authToken, gameID);
+    public void resign(int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(RESIGN, ClientState.getAuthToken(), gameID);
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 
-    public void leave(String authToken, int gameID) throws IOException {
-        UserGameCommand command = new UserGameCommand(LEAVE, authToken, gameID);
+    public void leave(int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(LEAVE, ClientState.getAuthToken(), gameID);
         session.getBasicRemote().sendText(gson.toJson(command));
+    }
+
+    public interface ServerMessageObserver {
+        void notify(ServerMessage message);
     }
 }

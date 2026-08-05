@@ -47,6 +47,8 @@ public class PreLoginClient {
             return new ClientResult("Must include Username, Password, and Email", null);
         }
         RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
+        ClientState.setAuthToken(result.authToken());
+        ClientState.setUsername(result.username());
         return new ClientResult("Registered new user:" + result.username(), "LoggedIn");
     }
 
@@ -55,6 +57,8 @@ public class PreLoginClient {
             return new ClientResult("Must include Username, and Password", null);
         }
         LoginResult result = server.login(new LoginRequest(params[0], params[1]));
+        ClientState.setAuthToken(result.authToken());
+        ClientState.setUsername(result.username());
         return new ClientResult("Logged in user:" + result.username(), "LoggedIn");
     }
 }
