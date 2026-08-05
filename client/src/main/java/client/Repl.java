@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Repl {
 
-    public String state = "LoggedOut";
+    public static String state = "LoggedOut";
     private final PreLoginClient preLoginClient;
     private final PreGameClient preGameClient;
     private ServerFacade server;
@@ -43,5 +43,9 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public static String getState(){
+        return state;
     }
 }

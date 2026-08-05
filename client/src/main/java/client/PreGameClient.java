@@ -116,86 +116,12 @@ public class PreGameClient {
         server.joinGame(new JoinGameRequest(colorToJoin, gameID));
 
         webSocket = new WebSocketFacade();
+        webSocket.setColorPerspective(colorToJoin);
         webSocket.connect(gameID);
-
-        System.out.print(assembleInitialBoard(colorToJoin));
 
         return new ClientResult("Joined game number " + params[0], "InGame");
     }
 
-    private static String assembleInitialBoard(ChessGame.TeamColor colorToJoin) {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        StringBuilder stringBoard = new StringBuilder();
-
-        stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
-
-        if (colorToJoin == ChessGame.TeamColor.WHITE) {
-            for (char letter = 'a'; letter <= 'h'; letter++) {
-                stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
-            }
-        } else {
-            for (char letter = 'h'; letter >= 'a'; letter--) {
-                stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
-            }
-        }
-
-        stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
-        stringBoard.append(RESET_BG_COLOR).append("\n");
-
-        for (int row = 1; row <= 8; row++) {
-
-            int boardRow = colorToJoin == ChessGame.TeamColor.BLACK ? row : 9 - row;
-            stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(boardRow).append(" ");
-
-            for (int col = 1; col <= 8; col++) {
-
-                if ((row + col) % 2 == 0) {
-                    stringBoard.append(SET_BG_COLOR_WHITE);
-                } else {
-                    stringBoard.append(SET_BG_COLOR_BLACK);
-                }
-
-                int boardCol = colorToJoin == ChessGame.TeamColor.BLACK ? 9 - col : col;
-
-                ChessPiece piece = board.getPiece(new ChessPosition(boardRow, boardCol));
-                stringBoard.append(symbol(piece));
-                if (col == 8) {
-                    stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(" ").append(boardRow).append("\u2003");
-                    stringBoard.append(RESET_BG_COLOR).append("\n");
-                }
-            }
-        }
-
-        stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
-        if (colorToJoin == ChessGame.TeamColor.WHITE) {
-            for (char letter = 'a'; letter <= 'h'; letter++) {
-                stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
-            }
-        } else {
-            for (char letter = 'h'; letter >= 'a'; letter--) {
-                stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(letter).append(" ");
-            }
-        }
-        stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
-        stringBoard.append(RESET_BG_COLOR).append("\n");
-
-        return stringBoard.toString();
-    }
-
-    private static String symbol(ChessPiece piece) {
-        if (piece == null) {
-            return EMPTY;
-        }
-        return switch (piece.getPieceType()) {
-            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN;
-            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
-            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_BISHOP : BLACK_BISHOP;
-            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_ROOK : BLACK_ROOK;
-            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN;
-            case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING;
-        };
-    }
 
     private static ClientResult observeGame(String[] params) {
         if (params.length < 1) {
@@ -210,7 +136,6 @@ public class PreGameClient {
         if (!gameNumbering.containsKey(gameNumber)) {
             return new ClientResult("Invalid game number. Use 'list' to see available games.", null);
         }
-        System.out.print(assembleInitialBoard(ChessGame.TeamColor.WHITE));
         return new ClientResult("Observing game " + params[0], "InGame");
     }
 

@@ -55,6 +55,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         AuthData authData = authDAO.getAuthData(authToken);
         GameData game = gameDAO.getGame(gameId);
 
+        if (game == null) {
+            ErrorMessage errorMessage = new ErrorMessage("Game #" + gameId + " does not exist.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        if (authData == null) {
+            ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
         connections.add(gameId, authData.username(), session);
 
         //Send game to new client
