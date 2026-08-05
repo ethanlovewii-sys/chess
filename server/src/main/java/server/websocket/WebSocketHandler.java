@@ -2,19 +2,26 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import exception.ResponseException;
 import io.javalin.websocket.*;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.Notification;
+
+import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
 
-    public WebSocketHandler(AuthDAO authDAO) {
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
     }
 
     @Override
@@ -24,7 +31,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(WsMessageContext ctx) throws ResponseException {
+    public void handleMessage(WsMessageContext ctx) throws ResponseException, IOException {
         UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(ctx.session, command.getAuthToken(), command.getGameID());
@@ -44,9 +51,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void connect(Session session, String authToken, Integer gameId) throws ResponseException {
+    private void connect(Session session, String authToken, Integer gameId) throws ResponseException, IOException {
         AuthData authData = authDAO.getAuthData(authToken);
         connections.add(gameId, authData.username(), session);
+
+        GameData game = gameDAO.getGame(gameId);
+        String role;
+        if (authData.username().equals(game.whiteUsername())) {
+            role = "White";
+        } else {
+            role = "Black";
+        }
+        ConnectionManager.broadcast(gameId, new Notification(Notification.Type.JOIN, "\n" + authData.username() + " has Joined as " + role));
+
     }
 
     @Override

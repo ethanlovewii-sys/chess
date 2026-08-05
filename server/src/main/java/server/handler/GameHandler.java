@@ -10,6 +10,7 @@ import result.ListGamesResult;
 import exception.ResponseException;
 import service.GameService;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class GameHandler {
@@ -33,14 +34,13 @@ public class GameHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public void joinGame(Context context) throws ResponseException, DataAccessException {
+    public void joinGame(Context context) throws ResponseException, DataAccessException, IOException {
         //Convert JSON -> Java object
         JoinGameRequest request = new Gson().fromJson(context.body(), JoinGameRequest.class);
         String authToken = context.header("Authorization");
 
         //Call related service
         service.joinGame(request, authToken);
-
 
         //If reached, send OK status and the register response
         context.status(200);

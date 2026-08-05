@@ -3,11 +3,7 @@ package client.websocket;
 import chess.ChessMove;
 import client.ClientState;
 import com.google.gson.Gson;
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.Session;
-import jakarta.websocket.WebSocketContainer;
+import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -24,16 +20,21 @@ public class WebSocketFacade extends Endpoint {
         URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         session = container.connectToServer(this, uri);
+
+        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message) {
+                System.out.println(message);
+                System.out.print("\n >>> ");
+            ;}
+        });
     }
 
     // This method must be overridden, but we don't have to do anything with it
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        this.session = session;
-        session.addMessageHandler(String.class, json -> {
-            ServerMessage message = gson.fromJson(json, ServerMessage.class);
-        });
     }
+
     public void connect(int gameID) throws IOException {
         UserGameCommand command = new UserGameCommand(CONNECT, ClientState.getAuthToken(), gameID);
         session.getBasicRemote().sendText(gson.toJson(command));

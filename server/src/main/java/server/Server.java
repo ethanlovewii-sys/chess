@@ -31,7 +31,7 @@ public class Server {
 
         UserHandler userHandler = new UserHandler(userDAO, authDAO);
         GameHandler gameHandler = new GameHandler(userDAO, authDAO, gameDAO);
-        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO);
+        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
         javalin.post("/user", userHandler::register);
         javalin.post("/session", userHandler::login);

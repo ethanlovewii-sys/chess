@@ -12,7 +12,10 @@ import request.JoinGameRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 import exception.ResponseException;
+import server.websocket.ConnectionManager;
+import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class GameService {
@@ -41,7 +44,7 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException, DataAccessException {
+    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException, DataAccessException, IOException {
         AuthData authData = authDAO.getAuthData(authToken);
         if (authData == null) {
             throw new ResponseException("Error: unauthorized", 401);
@@ -67,7 +70,6 @@ public class GameService {
             }
         }
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
-
     }
 
     public ListGamesResult listGames(String authToken) throws ResponseException, SQLException, DataAccessException {

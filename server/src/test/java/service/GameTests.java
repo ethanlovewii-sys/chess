@@ -17,6 +17,7 @@ import result.ListGamesResult;
 import result.RegisterResult;
 import exception.ResponseException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,7 +64,7 @@ public class GameTests {
     }
 
     @Test
-    void normalJoinGame() throws ResponseException, DataAccessException {
+    void normalJoinGame() throws ResponseException, DataAccessException, IOException {
         RegisterResult newUser = userService.register(new RegisterRequest("NewUser", "NewPassword", "new@mail.com"));
         gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, existingGameID), newUser.authToken());
 
