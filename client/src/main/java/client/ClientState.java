@@ -1,9 +1,12 @@
 package client;
 
+import chess.ChessGame;
+
 public class ClientState {
     private static String authToken;
     private static String username;
     private static int currentGameID;
+    private static ChessGame.TeamColor currentGameColor;
 
     public static void setAuthToken(String token) {
         authToken = token;
@@ -27,6 +30,14 @@ public class ClientState {
 
     public static int getGameID() {
         return currentGameID;
+    }
+
+    public static void setGameColor(ChessGame.TeamColor color) {
+        currentGameColor = color;
+    }
+
+    public static ChessGame.TeamColor getGameColor() {
+        return currentGameColor;
     }
 
     public static void clear() {

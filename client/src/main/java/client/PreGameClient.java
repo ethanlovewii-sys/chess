@@ -128,7 +128,7 @@ public class PreGameClient {
         if (params.length < 1) {
             return new ClientResult("Must include the game number you want to observe.", null);
         }
-        int gameNumber = 0;
+        int gameNumber;
         try {
             gameNumber = Integer.parseInt(params[0]);
         } catch (Exception ex) {

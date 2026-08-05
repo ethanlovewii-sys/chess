@@ -92,14 +92,13 @@ public class ServerFacade {
             }
 
             //read Body
-            if (http.getContentLength() > 0) {
-                try (InputStream reqBody = http.getInputStream()) {
+            try (InputStream reqBody = http.getInputStream()) {
+                if (responseType != null){
                     InputStreamReader reader = new InputStreamReader(reqBody);
-                    if (responseType != null){
-                        return new Gson().fromJson(reader, responseType);
-                    }
+                    return new Gson().fromJson(reader, responseType);
                 }
             }
+
             return null;
         } catch (ResponseException ex) {
             throw ex;

@@ -43,7 +43,7 @@ public class WebSocketFacade extends Endpoint {
                     }
                     case ERROR -> {
                         ErrorMessage error = gson.fromJson(json, ErrorMessage.class);
-                        System.out.println(error.getMessage() + SET_TEXT_COLOR_RED);
+                        System.out.println(SET_TEXT_COLOR_RED + error.getMessage() + RESET_TEXT_COLOR);
                     }
                 }
                 System.out.print(Repl.getState() + " >>> ");

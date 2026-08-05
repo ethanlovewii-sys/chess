@@ -69,6 +69,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
+        if (game.getBoard().getPiece(startPosition) == null) {
+            ErrorMessage errorMessage = new ErrorMessage("There is no piece at that starting position.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
         if (!game.validMoves(startPosition).contains(move)) {
             ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
             String json =  new Gson().toJson(errorMessage);
@@ -103,7 +110,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             game.makeMove(move);
         } catch  (InvalidMoveException e) {
-            ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
+            ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
             String json =  new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
