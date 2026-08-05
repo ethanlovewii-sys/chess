@@ -120,7 +120,7 @@ public class PreGameClient {
 
         System.out.print(assembleInitialBoard(colorToJoin));
 
-        return new ClientResult("Joined game number " + params[0], null);
+        return new ClientResult("Joined game number " + params[0], "InGame");
     }
 
     private static String assembleInitialBoard(ChessGame.TeamColor colorToJoin) {
@@ -211,7 +211,7 @@ public class PreGameClient {
             return new ClientResult("Invalid game number. Use 'list' to see available games.", null);
         }
         System.out.print(assembleInitialBoard(ChessGame.TeamColor.WHITE));
-        return new ClientResult("Observing game " + params[0], null);
+        return new ClientResult("Observing game " + params[0], "InGame");
     }
 
     private static ClientResult help() {

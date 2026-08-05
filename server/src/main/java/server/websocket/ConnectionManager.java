@@ -2,8 +2,7 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.Notification;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,16 +23,22 @@ public class ConnectionManager {
         connections.get(gameId).remove(session);
     }
 
-    public static void broadcast(int gameId, Notification notification) throws IOException {
-        String msg = notification.toString();
+    public static void broadcast(int gameId, String excludedUsername, NotificationMessage message) throws IOException {
+        String json = new Gson().toJson(message);
         var gameConnections = connections.get(gameId);
 
         if (gameConnections == null) {
             return;
         }
 
-        for (Session session: gameConnections.values()) {
-            session.getRemote().sendString(msg);
+        for (var entry : gameConnections.entrySet()) {
+            String username = entry.getKey();
+            Session session = entry.getValue();
+
+            if (!username.equals(excludedUsername)) {
+                session.getRemote().sendString(json);
+
+            }
         }
     }
 

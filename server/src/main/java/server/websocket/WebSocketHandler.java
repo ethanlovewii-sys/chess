@@ -9,7 +9,7 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
-import websocket.messages.Notification;
+import websocket.messages.*;
 
 import java.io.IOException;
 
@@ -53,17 +53,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void connect(Session session, String authToken, Integer gameId) throws ResponseException, IOException {
         AuthData authData = authDAO.getAuthData(authToken);
+        GameData game = gameDAO.getGame(gameId);
+
         connections.add(gameId, authData.username(), session);
 
-        GameData game = gameDAO.getGame(gameId);
+        //Send game to new client
+        LoadGameMessage loadGame = new LoadGameMessage(game.game());
+        session.getRemote().sendString(new Gson().toJson(loadGame));
+
+        //Find role and notify everyone.
         String role;
         if (authData.username().equals(game.whiteUsername())) {
             role = "White";
         } else {
             role = "Black";
         }
-        ConnectionManager.broadcast(gameId, new Notification(Notification.Type.JOIN, "\n" + authData.username() + " has Joined as " + role));
-
+        NotificationMessage notification = new NotificationMessage(authData.username() + " has Joined as " + role);
+        ConnectionManager.broadcast(gameId, authData.username(), notification);
     }
 
     @Override
