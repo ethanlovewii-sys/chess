@@ -1,13 +1,21 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import exception.ResponseException;
 import io.javalin.websocket.*;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final AuthDAO authDAO;
+
+    public WebSocketHandler(AuthDAO authDAO) {
+        this.authDAO = authDAO;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -16,10 +24,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(WsMessageContext ctx) {
+    public void handleMessage(WsMessageContext ctx) throws ResponseException {
         UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
         switch (command.getCommandType()) {
-            case CONNECT -> connect(ctx.session);
+            case CONNECT -> connect(ctx.session, command.getAuthToken(), command.getGameID());
             case MAKE_MOVE -> makeMove(ctx.session);
             case LEAVE -> leave(ctx.session);
             case RESIGN -> resign(ctx.session);
@@ -36,8 +44,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void connect(Session session) {
-
+    private void connect(Session session, String authToken, Integer gameId) throws ResponseException {
+        AuthData authData = authDAO.getAuthData(authToken);
+        connections.add(gameId, authData.username(), session);
     }
 
     @Override

@@ -41,6 +41,7 @@ public class GameHandler {
         //Call related service
         service.joinGame(request, authToken);
 
+
         //If reached, send OK status and the register response
         context.status(200);
     }

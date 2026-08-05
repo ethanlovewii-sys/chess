@@ -11,6 +11,7 @@ import result.ErrorResult;
 import server.handler.GameHandler;
 import server.handler.UserHandler;
 import io.javalin.http.Context;
+import server.websocket.WebSocketHandler;
 
 public class Server {
 
@@ -30,6 +31,7 @@ public class Server {
 
         UserHandler userHandler = new UserHandler(userDAO, authDAO);
         GameHandler gameHandler = new GameHandler(userDAO, authDAO, gameDAO);
+        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO);
 
         javalin.post("/user", userHandler::register);
         javalin.post("/session", userHandler::login);
@@ -39,11 +41,18 @@ public class Server {
         javalin.put("/game", gameHandler::joinGame);
         javalin.get("/game", gameHandler::listGames);
 
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
+
         javalin.delete("/db", gameHandler::clear);
 
         //Catches exceptions and has the exception handler format them
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataExceptionHandler);
+
     }
 
     private void dataExceptionHandler(DataAccessException ex, Context context) {

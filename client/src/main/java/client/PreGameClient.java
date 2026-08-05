@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import client.websocket.WebSocketFacade;
 import model.GameData;
 import request.*;
 import result.*;
@@ -17,10 +18,12 @@ import static ui.EscapeSequences.*;
 public class PreGameClient {
 
     private static ServerFacade server = null;
+    private static WebSocketFacade webSocket = null;
     private static Map<Integer, GameData> gameNumbering = new HashMap<>();
 
-    public PreGameClient(ServerFacade server) {
+    public PreGameClient(ServerFacade server, WebSocketFacade webSocket) {
         PreGameClient.server = server;
+        PreGameClient.webSocket = webSocket;
     }
 
     public static ClientResult eval(String input) {
@@ -110,6 +113,7 @@ public class PreGameClient {
         }
 
         server.joinGame(new JoinGameRequest(colorToJoin, gameID));
+        webSocket.co
 
         System.out.print(assembleInitialBoard(colorToJoin));
 

@@ -67,6 +67,7 @@ public class GameService {
             }
         }
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
+
     }
 
     public ListGamesResult listGames(String authToken) throws ResponseException, SQLException, DataAccessException {
