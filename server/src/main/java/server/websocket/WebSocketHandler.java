@@ -56,7 +56,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame game = gameData.game();
 
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())) {
-            NotificationMessage errorMessage = new NotificationMessage("Only players can resign.");
+            ErrorMessage errorMessage = new ErrorMessage("Only players can resign.");
             String json =  new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;

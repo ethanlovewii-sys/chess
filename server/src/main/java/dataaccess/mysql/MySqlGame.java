@@ -132,8 +132,7 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         SET whiteUsername = ?
         WHERE gameID = ?
         """;
-        String jsonUser = new Gson().toJson(username);
-        executeUpdate(statement, jsonUser, gameID);
+        executeUpdate(statement, username, gameID);
     }
 
     public void updateBlackUser(String username, int gameID) throws ResponseException, DataAccessException {
