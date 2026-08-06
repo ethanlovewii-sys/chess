@@ -14,14 +14,12 @@ import static ui.EscapeSequences.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketFacade extends Endpoint {
     public Session session;
-    public ChessGame.TeamColor colorPerspective;
     private final Gson gson = new Gson();
     private Timer promptTimer = new Timer(true);
 
@@ -38,8 +36,8 @@ public class WebSocketFacade extends Endpoint {
                 switch (serverMessage.getServerMessageType()) {
                     case LOAD_GAME -> {
                         LoadGameMessage gameMessage = gson.fromJson(json, LoadGameMessage.class);
-                        System.out.println(parseChessBoard(colorPerspective, gameMessage.getGame().getBoard()));
-                        ClientState.setCurrentBoard(gameMessage.getGame().getBoard());
+                        System.out.println(parseChessBoard(ClientState.getGameColor(), gameMessage.getGame().getBoard(), null, null));
+                        ClientState.setCurrentGame(gameMessage.getGame());
                     }
                     case NOTIFICATION -> {
                         NotificationMessage notification = gson.fromJson(json, NotificationMessage.class);
@@ -81,7 +79,7 @@ public class WebSocketFacade extends Endpoint {
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 
-    private static String parseChessBoard(ChessGame.TeamColor colorPerspective, ChessBoard board) {
+    private static String parseChessBoard(ChessGame.TeamColor colorPerspective, ChessBoard board, Collection<String> highlights, String highlightPiece) {
         StringBuilder stringBoard = new StringBuilder();
 
         stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
@@ -105,11 +103,22 @@ public class WebSocketFacade extends Endpoint {
             stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(boardRow).append(" ");
 
             for (int col = 1; col <= 8; col++) {
-
-                if ((row + col) % 2 == 0) {
-                    stringBoard.append(SET_BG_COLOR_WHITE);
+                String coordinate = "" + boardRow + col;
+                if (coordinate.equals(highlightPiece)) {
+                    stringBoard.append(SET_BG_COLOR_GREEN);
+                }
+                else if ((row + col) % 2 == 0) {
+                    if (highlights != null && highlights.contains(coordinate)){
+                        stringBoard.append(SET_BG_COLOR_LIGHT_MAGENTA);
+                    } else {
+                        stringBoard.append(SET_BG_COLOR_WHITE);
+                    }
                 } else {
-                    stringBoard.append(SET_BG_COLOR_BLACK);
+                    if (highlights != null && highlights.contains(coordinate)) {
+                        stringBoard.append(SET_BG_COLOR_MAGENTA);
+                    } else {
+                        stringBoard.append(SET_BG_COLOR_BLACK);
+                    }
                 }
 
                 int boardCol = colorPerspective == ChessGame.TeamColor.BLACK ? 9 - col : col;
@@ -153,10 +162,6 @@ public class WebSocketFacade extends Endpoint {
         };
     }
 
-    public void setColorPerspective(ChessGame.TeamColor color) {
-        colorPerspective = color;
-    }
-
     private void schedulePrompt() {
         promptTimer.cancel();
         promptTimer = new Timer(true);
@@ -166,10 +171,24 @@ public class WebSocketFacade extends Endpoint {
             public void run() {
                 System.out.print(Repl.getState() + " >>> ");
             }
-        }, 500);
+        }, 250);
     }
 
     public void redraw() {
-        System.out.println(parseChessBoard(colorPerspective, ClientState.getCurrentBoard()));
+        System.out.println(parseChessBoard(ClientState.getGameColor(), ClientState.getCurrentGame().getBoard(), null, null));
+    }
+
+    public void highlightMoves(ChessPosition chessposition) {
+        String pieceCoordinate = "" + chessposition.getRow() + chessposition.getColumn();
+        Collection<String> highlightCoordinates = new ArrayList<>(List.of());
+        Collection<ChessMove> moves = ClientState.getCurrentGame().validMoves(chessposition);
+        for (ChessMove move : moves) {
+            int row = move.getEndPosition().getRow();
+            int col = move.getEndPosition().getColumn();
+            highlightCoordinates.add("" + row + col);
+        }
+        System.out.println(parseChessBoard(ClientState.getGameColor(), ClientState.getCurrentGame().getBoard(), highlightCoordinates, pieceCoordinate));
+        //here i could make a list of the coordinates to highlight then send it into the parser and have the parser check if
+        //each spot is in the list then color it magenta if it it.
     }
 }

@@ -38,7 +38,35 @@ public class InGameClient {
     }
 
     private static ClientResult highlightMoves(String[] params) {
+        if (params.length == 0) {
+            return new ClientResult("Must include the position of the piece. EX: A3", null);
+        }
 
+        if (params[0].length() != 2) {
+            return new ClientResult("Positions should be two characters long. Ex: A2", null);
+        }
+
+        String position = params[0];
+        char col = position.charAt(0);
+        char row = position.charAt(1);
+        if (col < 'a' || col > 'h' ||
+                !Character.isDigit(row) ||
+                row < '1' || row > '8') {
+            return new ClientResult("Invalid position. Use A1 through H8.", null);
+        }
+
+        int colInt = col - 'a' + 1;
+        int rowInt = Character.getNumericValue(row);
+
+        ChessPosition chessposition;
+        try {
+            chessposition = new ChessPosition(rowInt, colInt);
+        } catch (Exception e) {
+            return new ClientResult("Must use a positions found on the board. Reference the coordinates found on the border.", null);
+        }
+
+        webSocket.highlightMoves(chessposition);
+        return new ClientResult("", null);
     }
 
     private static ClientResult redraw() {
@@ -85,14 +113,15 @@ public class InGameClient {
                 startRowChar < '1' || startRowChar > '8') {
             return new ClientResult("Invalid start position. Use A1 through H8.", null);
         }
+        if (endCol < 'a' || endCol > 'h' ||
+                !Character.isDigit(startRowChar) ||
+                endRowChar < '1' || endRowChar > '8') {
+            return new ClientResult("Invalid end position. Use A1 through H8.", null);
+        }
 
         //Convert to int
         int startColInt = startCol - 'a' + 1;
         int endColInt = endCol - 'a' + 1;
-
-        if (!Character.isDigit(startRowChar) || !Character.isDigit(endRowChar)) {
-            return new ClientResult("Start and End positions must end in a number. Ex: A2 A3", null);
-        }
 
         int startRow = Character.getNumericValue(startRowChar);
         int endRow = Character.getNumericValue(endRowChar);

@@ -116,7 +116,7 @@ public class PreGameClient {
         server.joinGame(new JoinGameRequest(colorToJoin, gameID));
 
         webSocket = new WebSocketFacade();
-        webSocket.setColorPerspective(colorToJoin);
+        ClientState.setGameColor(colorToJoin);
         webSocket.connect(gameID);
         ClientState.setGameID(gameID);
 

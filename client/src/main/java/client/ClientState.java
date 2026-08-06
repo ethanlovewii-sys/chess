@@ -8,7 +8,7 @@ public class ClientState {
     private static String username;
     private static int currentGameID;
     private static ChessGame.TeamColor currentGameColor;
-    private static ChessBoard currentBoard;
+    private static ChessGame currentGame;
 
     public static void setAuthToken(String token) {
         authToken = token;
@@ -42,11 +42,11 @@ public class ClientState {
         return currentGameColor;
     }
 
-    public static void setCurrentBoard(ChessBoard board) {
-        currentBoard = board;
+    public static void setCurrentGame(ChessGame game) {
+        currentGame = game;
     }
-    public static ChessBoard getCurrentBoard() {
-        return currentBoard;
+    public static ChessGame getCurrentGame() {
+        return currentGame;
     }
 
     public static void clear() {
