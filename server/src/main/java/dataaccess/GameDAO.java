@@ -20,4 +20,7 @@ public interface GameDAO {
 
     void updateGame(ChessGame game, int gameID) throws ResponseException, DataAccessException;
 
+    void updateWhiteUser(String username, int gameID) throws ResponseException, DataAccessException;
+
+    void updateBlackUser(String username, int gameID) throws ResponseException, DataAccessException;
 }

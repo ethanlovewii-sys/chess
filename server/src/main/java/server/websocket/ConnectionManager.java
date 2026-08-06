@@ -19,8 +19,8 @@ public class ConnectionManager {
         connections.get(gameId).put(username, session);
     }
 
-    public void remove(int gameId, Session session) {
-        connections.get(gameId).remove(session);
+    public void remove(int gameId, String username) {
+        connections.get(gameId).remove(username);
     }
 
     public static void broadcast(int gameId, String excludedUsername, ServerMessage message) throws IOException {

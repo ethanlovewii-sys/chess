@@ -38,7 +38,7 @@ public class Repl {
                     case "LoggedIn" -> result = preGameClient.eval(line);
                     case "InGame" -> result = inGameClient.eval(line);
                 }
-                System.out.print("\n" + result.message());
+                System.out.print(result.message());
                 if (!(result.nextState() == null)) {
                     state = result.nextState();
                 }
@@ -52,5 +52,9 @@ public class Repl {
 
     public static String getState(){
         return state;
+    }
+
+    public void printPrompt() {
+        System.out.print("\n" + state + " >>> ");
     }
 }

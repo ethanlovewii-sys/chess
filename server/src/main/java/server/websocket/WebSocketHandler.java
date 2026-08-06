@@ -15,6 +15,7 @@ import websocket.messages.*;
 import websocket.commands.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -44,15 +45,50 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 MakeMoveCommand moveCommand = gson.fromJson(ctx.message(), MakeMoveCommand.class);
                 makeMove(ctx.session, moveCommand.getMove(), moveCommand.getAuthToken(), moveCommand.getGameID());
             }
-            case LEAVE -> leave(ctx.session);
-            case RESIGN -> resign(ctx.session);
+            case LEAVE -> leave(ctx.session, command.getAuthToken(), command.getGameID());
+            case RESIGN -> resign(ctx.session, command.getAuthToken(), command.getGameID());
         }
     }
 
-    private void resign(Session session) {
+    private void resign(Session session, String authToken, int gameID) throws ResponseException, DataAccessException, IOException {
+        GameData gameData = gameDAO.getGame(gameID);
+        AuthData authData = authDAO.getAuthData(authToken);
+        ChessGame game = gameData.game();
+
+        if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())) {
+            NotificationMessage errorMessage = new NotificationMessage("Only players can resign.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        if (game.isGameOver()) {
+            ErrorMessage message = new ErrorMessage("This game is already over, you can no longer resign.");
+            String json =  new Gson().toJson(message);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        game.setGameOver(true);
+        gameDAO.updateGame(game, gameID);
+
+        NotificationMessage notification = new NotificationMessage(authData.username() + " has resigned. The game in now over.");
+        ConnectionManager.broadcast(gameID, null, notification);
     }
 
-    private void leave(Session session) {
+    private void leave(Session session, String authToken, int gameID) throws ResponseException, DataAccessException, IOException {
+        GameData gameData = gameDAO.getGame(gameID);
+        AuthData authData = authDAO.getAuthData(authToken);
+        if (authData.username().equals(gameData.whiteUsername())) {
+            gameDAO.updateWhiteUser(null, gameID);
+        }
+        if (authData.username().equals(gameData.blackUsername())) {
+            gameDAO.updateBlackUser(null, gameID);
+        }
+        connections.remove(gameID, authData.username());
+
+        NotificationMessage notification = new NotificationMessage(authData.username() + " has left the game.");
+        ConnectionManager.broadcast(gameID, authData.username(), notification);
     }
 
     private void makeMove(Session session, ChessMove move, String authToken, int gameID) throws ResponseException, IOException, InvalidMoveException, DataAccessException {
@@ -61,6 +97,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         AuthData authData = authDAO.getAuthData(authToken);
         ChessGame game = gameData.game();
         ChessPiece piece = game.getBoard().getPiece(startPosition);
+
+        if (game.isGameOver()){
+            ErrorMessage errorMessage = new ErrorMessage("This game is over.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
 
         if (authData == null) {
             ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
@@ -121,12 +164,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ConnectionManager.broadcast(gameID, null, loadGame);
 
         ChessPosition endPosition = move.getEndPosition();
-        NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.toString() + " to " + endPosition.toString());
+        int row = endPosition.getRow();
+        int column = endPosition.getColumn();
+        char colChar = (char) ('A' + column - 1);
+        NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.getPieceType().toString().toLowerCase() + " to " + colChar + row);
         ConnectionManager.broadcast(gameID, authData.username(), notification);
 
         if (game.isInCheckmate(enemyColor)){
             NotificationMessage mateNotification = new NotificationMessage(enemyColor + " is in CheckMate! " + teamColor + " Wins!!");
             ConnectionManager.broadcast(gameID, null, mateNotification);
+            game.setGameOver(true);
         }
         else if (game.isInCheck(enemyColor)){
             NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
@@ -135,6 +182,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else if (game.isInStalemate(enemyColor)){
             NotificationMessage staleNotification = new NotificationMessage(enemyColor + " has no viable moves. Stalemate! It's a tie.");
             ConnectionManager.broadcast(gameID, null, staleNotification);
+            game.setGameOver(true);
         }
     }
 
@@ -166,8 +214,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String role;
         if (authData.username().equals(game.whiteUsername())) {
             role = "White";
-        } else {
+        } else if (authData.username().equals(game.blackUsername())) {
             role = "Black";
+        } else {
+            role = "Observer";
         }
         NotificationMessage notification = new NotificationMessage(authData.username() + " has Joined as " + role);
         ConnectionManager.broadcast(gameId, authData.username(), notification);

@@ -7,6 +7,7 @@ import result.ClientResult;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class InGameClient {
 
@@ -25,11 +26,29 @@ public class InGameClient {
             return switch (cmd) {
                 case "quit" -> new ClientResult("quit", null);
                 case "move" -> makeMove(params);
+                case "resign" -> resign();
+                case "leave" -> leave();
                 default -> help();
             };
         } catch (Exception ex) {
             return new ClientResult(ex.getMessage(), null);
         }
+    }
+
+    private static ClientResult leave() throws IOException {
+        webSocket.leave(ClientState.getGameID());
+        return new ClientResult("You have left the game.", "LoggedIn");
+    }
+
+    private static ClientResult resign() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nType 'yes' to confirm you want to resign.\n>>> ");
+        String line = scanner.nextLine();
+        if (!line.equalsIgnoreCase("yes")) {
+            return new ClientResult("Continue playing, good luck!", null);
+        }
+        webSocket.resign(ClientState.getGameID());
+        return new ClientResult("You reigned and have thus lost! Use the command 'leave' to leave the game.", null);
     }
 
     private static ClientResult makeMove(String[] params) throws IOException {

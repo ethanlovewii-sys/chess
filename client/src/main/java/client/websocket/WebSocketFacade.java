@@ -14,6 +14,8 @@ import static ui.EscapeSequences.*;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static websocket.commands.UserGameCommand.CommandType.*;
 
@@ -21,6 +23,7 @@ public class WebSocketFacade extends Endpoint {
     public Session session;
     public ChessGame.TeamColor colorPerspective;
     private final Gson gson = new Gson();
+    private Timer promptTimer = new Timer(true);
 
     public WebSocketFacade() throws Exception {
         URI uri = new URI("ws://localhost:8080/ws");
@@ -46,7 +49,7 @@ public class WebSocketFacade extends Endpoint {
                         System.out.println(SET_TEXT_COLOR_RED + error.getMessage() + RESET_TEXT_COLOR);
                     }
                 }
-                System.out.print(Repl.getState() + " >>> ");
+                schedulePrompt();
             ;}
         });
     }
@@ -152,4 +155,15 @@ public class WebSocketFacade extends Endpoint {
         colorPerspective = color;
     }
 
+    private void schedulePrompt() {
+        promptTimer.cancel();
+        promptTimer = new Timer(true);
+
+        promptTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.print("\n" + Repl.getState() + " >>> ");
+            }
+        }, 500);
+    }
 }

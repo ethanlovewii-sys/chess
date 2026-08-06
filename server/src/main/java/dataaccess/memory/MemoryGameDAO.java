@@ -1,7 +1,9 @@
 package dataaccess.memory;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import exception.ResponseException;
 import model.GameData;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +45,16 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void updateGame(ChessGame game, int gameID) {
+
+    }
+
+    @Override
+    public void updateWhiteUser(String username, int gameID) throws ResponseException, DataAccessException {
+
+    }
+
+    @Override
+    public void updateBlackUser(String username, int gameID) throws ResponseException, DataAccessException {
 
     }
 }
