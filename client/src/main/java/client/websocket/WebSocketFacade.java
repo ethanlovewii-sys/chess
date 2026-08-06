@@ -103,7 +103,9 @@ public class WebSocketFacade extends Endpoint {
             stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append("\u2003").append(boardRow).append(" ");
 
             for (int col = 1; col <= 8; col++) {
-                String coordinate = "" + boardRow + col;
+                int boardCol = colorPerspective == ChessGame.TeamColor.BLACK ? 9 - col : col;
+
+                String coordinate = "" + boardRow + boardCol;
                 if (coordinate.equals(highlightPiece)) {
                     stringBoard.append(SET_BG_COLOR_GREEN);
                 }
@@ -120,8 +122,6 @@ public class WebSocketFacade extends Endpoint {
                         stringBoard.append(SET_BG_COLOR_BLACK);
                     }
                 }
-
-                int boardCol = colorPerspective == ChessGame.TeamColor.BLACK ? 9 - col : col;
 
                 ChessPiece piece = board.getPiece(new ChessPosition(boardRow, boardCol));
                 stringBoard.append(symbol(piece));

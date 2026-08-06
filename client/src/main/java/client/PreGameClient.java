@@ -79,7 +79,11 @@ public class PreGameClient {
             if (game.blackUsername() == null) {
                 blackPlayer = "awaiting player";
             }
-            gameList += counter + " - " + game.gameName() + " - White: " + whitePlayer + " - Black: " + blackPlayer + "\n";
+            gameList += "\n" + counter + " - " + game.gameName() + " - White: " + whitePlayer + " - Black: " + blackPlayer;
+
+            if (game.isGameOver()) {
+                gameList += " - Game Over";
+            }
 
             gameNumbering.put(counter, game);
 
@@ -124,7 +128,7 @@ public class PreGameClient {
     }
 
 
-    private static ClientResult observeGame(String[] params) {
+    private static ClientResult observeGame(String[] params) throws Exception {
         if (params.length < 1) {
             return new ClientResult("Must include the game number you want to observe.", null);
         }
@@ -137,6 +141,15 @@ public class PreGameClient {
         if (!gameNumbering.containsKey(gameNumber)) {
             return new ClientResult("Invalid game number. Use 'list' to see available games.", null);
         }
+
+        int gameID = gameNumbering.get(gameNumber).gameID();
+
+        webSocket = new WebSocketFacade();
+        ClientState.setGameColor(ChessGame.TeamColor.WHITE);
+        webSocket.connect(gameID);
+        ClientState.setGameID(gameID);
+        ClientState.setIsObserver(true);
+
         return new ClientResult("Observing game " + params[0], "InGame");
     }
 

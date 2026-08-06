@@ -23,6 +23,8 @@ public class MySqlParent {
                         ps.setString(i + 1, p);
                     } else if (param instanceof Integer p) {
                         ps.setInt(i + 1, p);
+                    } else if (param instanceof Boolean p) {
+                        ps.setBoolean(i + 1, p);
                     } else if (param == null) {
                         ps.setNull(i + 1, NULL);
                     }

@@ -9,6 +9,7 @@ public class ClientState {
     private static int currentGameID;
     private static ChessGame.TeamColor currentGameColor;
     private static ChessGame currentGame;
+    private static boolean isObserver;
 
     public static void setAuthToken(String token) {
         authToken = token;
@@ -45,8 +46,17 @@ public class ClientState {
     public static void setCurrentGame(ChessGame game) {
         currentGame = game;
     }
+
     public static ChessGame getCurrentGame() {
         return currentGame;
+    }
+
+    public static void setIsObserver(boolean isAnObserver) {
+        isObserver = isAnObserver;
+    }
+
+    public static boolean isObserver() {
+        return isObserver;
     }
 
     public static void clear() {

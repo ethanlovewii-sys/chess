@@ -76,21 +76,29 @@ public class InGameClient {
 
     private static ClientResult leave() throws IOException {
         webSocket.leave(ClientState.getGameID());
+        ClientState.setIsObserver(false);
         return new ClientResult("You have left the game.", "LoggedIn");
     }
 
     private static ClientResult resign() throws IOException {
+        if (ClientState.isObserver()) {
+            return new ClientResult("Observers can not resign.", null);
+        }
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nType 'yes' to confirm you want to resign.\n>>> ");
         String line = scanner.nextLine();
         if (!line.equalsIgnoreCase("yes")) {
-            return new ClientResult("Continue playing, good luck!", null);
+            return new ClientResult("Continue on!", null);
         }
         webSocket.resign(ClientState.getGameID());
-        return new ClientResult("You reigned and have thus lost! Use the command 'leave' to leave the game.", null);
+        return new ClientResult("", null);
     }
 
     private static ClientResult makeMove(String[] params) throws IOException {
+        if (ClientState.isObserver()) {
+            return new ClientResult("Observers can not make moves.", null);
+        }
+
         if (params.length != 2) {
             return new ClientResult("Must only include a start and end position for your move. Ex: A5 D8", null);
         }

@@ -14,7 +14,7 @@ public class MemoryGameDAO implements GameDAO {
     int gameID = 1;
 
     public int createGame(String gameName) {
-        GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
+        GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame(), false);
         games.put(gameID, gameData);
         return gameID++;
     }
@@ -27,10 +27,10 @@ public class MemoryGameDAO implements GameDAO {
         GameData oldGame = getGame(oldGameID);
         GameData newgameData = null;
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            newgameData = new GameData(oldGameID, username, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+            newgameData = new GameData(oldGameID, username, oldGame.blackUsername(), oldGame.gameName(), oldGame.game(), false);
         }
         if (teamColor == ChessGame.TeamColor.BLACK) {
-            newgameData = new GameData(oldGameID, oldGame.whiteUsername(), username, oldGame.gameName(), oldGame.game());
+            newgameData = new GameData(oldGameID, oldGame.whiteUsername(), username, oldGame.gameName(), oldGame.game(), false);
         }
         games.put(oldGameID, newgameData);
     }
@@ -55,6 +55,11 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void updateBlackUser(String username, int gameID) throws ResponseException, DataAccessException {
+
+    }
+
+    @Override
+    public void setGameOver(int gameID) throws ResponseException, DataAccessException {
 
     }
 }

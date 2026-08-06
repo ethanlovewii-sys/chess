@@ -91,6 +91,7 @@ public class DatabaseManager {
               `blackUsername` VARCHAR(255),
               `gameName` VARCHAR(255),
               gameState JSON,
+              isGameOver boolean,
               PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,

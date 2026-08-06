@@ -62,14 +62,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-        if (game.isGameOver()) {
+        if (gameData.isGameOver()) {
             ErrorMessage message = new ErrorMessage("This game is already over, you can no longer resign.");
             String json =  new Gson().toJson(message);
             session.getRemote().sendString(json);
             return;
         }
-
-        game.setGameOver(true);
+        gameDAO.setGameOver(gameID);
         gameDAO.updateGame(game, gameID);
 
         NotificationMessage notification = new NotificationMessage(authData.username() + " has resigned. The game in now over.");
@@ -98,15 +97,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame game = gameData.game();
         ChessPiece piece = game.getBoard().getPiece(startPosition);
 
-        if (game.isGameOver()){
-            ErrorMessage errorMessage = new ErrorMessage("This game is over.");
+        if (authData == null) {
+            ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
             String json =  new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
-        if (authData == null) {
-            ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
+        ChessGame.TeamColor enemyColor = null;
+        ChessGame.TeamColor teamColor = null;
+        if (authData.username().equals(gameData.whiteUsername())) {
+            teamColor = ChessGame.TeamColor.WHITE;
+            enemyColor = ChessGame.TeamColor.BLACK;
+        } else if (authData.username().equals(gameData.blackUsername())) {
+            teamColor = ChessGame.TeamColor.BLACK;
+            enemyColor = ChessGame.TeamColor.WHITE;
+        } else {
+            ErrorMessage errorMessage = new ErrorMessage("Only players can make moves.");
+            String json =  new Gson().toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        if (gameData.isGameOver()){
+            ErrorMessage errorMessage = new ErrorMessage("This game is over.");
             String json =  new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
@@ -124,16 +138,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String json =  new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
-        }
-
-        ChessGame.TeamColor enemyColor = null;
-        ChessGame.TeamColor teamColor = null;
-        if (authData.username().equals(gameData.whiteUsername())) {
-            teamColor = ChessGame.TeamColor.WHITE;
-            enemyColor = ChessGame.TeamColor.BLACK;
-        } else if (authData.username().equals(gameData.blackUsername())) {
-            teamColor = ChessGame.TeamColor.BLACK;
-            enemyColor = ChessGame.TeamColor.WHITE;
         }
         
         if (teamColor == null){
@@ -173,7 +177,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (game.isInCheckmate(enemyColor)){
             NotificationMessage mateNotification = new NotificationMessage(enemyColor + " is in CheckMate! " + teamColor + " Wins!!");
             ConnectionManager.broadcast(gameID, null, mateNotification);
-            game.setGameOver(true);
+            gameDAO.setGameOver(gameID);
         }
         else if (game.isInCheck(enemyColor)){
             NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
@@ -182,7 +186,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else if (game.isInStalemate(enemyColor)){
             NotificationMessage staleNotification = new NotificationMessage(enemyColor + " has no viable moves. Stalemate! It's a tie.");
             ConnectionManager.broadcast(gameID, null, staleNotification);
-            game.setGameOver(true);
+            gameDAO.setGameOver(gameID);
         }
     }
 

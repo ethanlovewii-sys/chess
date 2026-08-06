@@ -26,15 +26,15 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         }
         var statement = """
                 INSERT INTO games
-                (whiteUsername, blackUsername, gameName, gameState)
-                 VALUES (?, ?, ?, ?)
+                (whiteUsername, blackUsername, gameName, gameState, isGameOver)
+                 VALUES (?, ?, ?, ?, ?)
                 """;
-        return executeUpdate(statement, null, null, gameName, new Gson().toJson(new ChessGame()));
+        return executeUpdate(statement, null, null, gameName, new Gson().toJson(new ChessGame()), false);
     }
 
     public GameData getGame(int gameID) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, gameState FROM games WHERE gameID = ?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, gameState, isGameOver FROM games WHERE gameID = ?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, String.valueOf(gameID));
                 try (ResultSet rs = ps.executeQuery()) {
@@ -55,9 +55,10 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         String whiteUsername = rs.getString("whiteUsername");
         String blackUsername = rs.getString("blackUsername");
         String gameName = rs.getString("gameName");
+        boolean  isGameOver = rs.getBoolean("isGameOver");
         String jsonGameState = rs.getString("gameState");
         ChessGame gameState = new Gson().fromJson(jsonGameState, ChessGame.class);
-        return new GameData(gameID, whiteUsername, blackUsername, gameName, gameState);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, gameState, isGameOver);
     }
 
 
@@ -82,7 +83,7 @@ public class MySqlGame extends MySqlParent implements GameDAO {
     public List<GameData> listGames() throws DataAccessException, SQLException {
         List<GameData> gameList = new ArrayList<>();
         String statement = """
-                SELECT gameID, whiteUsername, blackUsername, gameName, gameState
+                SELECT gameID, whiteUsername, blackUsername, gameName, gameState, isGameOver
                 FROM games
                 """;
         try (var conn = DatabaseManager.getConnection();
@@ -96,11 +97,12 @@ public class MySqlGame extends MySqlParent implements GameDAO {
                 String blackUsername = rs.getString("blackUsername");
                 String gameName = rs.getString("gameName");
                 String gameState = rs.getString("gameState");
+                boolean  isGameOver = rs.getBoolean("isGameOver");
 
                 //Convert ChessGame JSON back to an object
                 ChessGame gameStateObject = new Gson().fromJson(gameState, ChessGame.class);
 
-                gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, gameStateObject));
+                gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, gameStateObject,  isGameOver));
             }
             return gameList;
         }
@@ -141,8 +143,17 @@ public class MySqlGame extends MySqlParent implements GameDAO {
         SET blackUsername = ?
         WHERE gameID = ?
         """;
-        String jsonUser = new Gson().toJson(username);
-        executeUpdate(statement, jsonUser, gameID);
+        executeUpdate(statement, username, gameID);
+    }
+
+    @Override
+    public void setGameOver(int gameID) throws ResponseException, DataAccessException {
+        String statement = """
+        UPDATE games
+        SET isGameOver = ?
+        WHERE gameID = ?
+        """;
+        executeUpdate(statement, true, gameID);
     }
 
 }

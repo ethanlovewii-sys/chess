@@ -23,4 +23,6 @@ public interface GameDAO {
     void updateWhiteUser(String username, int gameID) throws ResponseException, DataAccessException;
 
     void updateBlackUser(String username, int gameID) throws ResponseException, DataAccessException;
+
+    void setGameOver(int gameID) throws ResponseException, DataAccessException;
 }
