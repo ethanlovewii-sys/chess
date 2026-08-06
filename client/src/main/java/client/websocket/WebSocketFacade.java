@@ -35,10 +35,11 @@ public class WebSocketFacade extends Endpoint {
             public void onMessage(String json) {
                 System.out.println("\n");
                 ServerMessage serverMessage = gson.fromJson(json, ServerMessage.class);
-                switch (serverMessage.getServerMessageType()){
+                switch (serverMessage.getServerMessageType()) {
                     case LOAD_GAME -> {
                         LoadGameMessage gameMessage = gson.fromJson(json, LoadGameMessage.class);
                         System.out.println(parseChessBoard(colorPerspective, gameMessage.getGame().getBoard()));
+                        ClientState.setCurrentBoard(gameMessage.getGame().getBoard());
                     }
                     case NOTIFICATION -> {
                         NotificationMessage notification = gson.fromJson(json, NotificationMessage.class);
@@ -50,7 +51,8 @@ public class WebSocketFacade extends Endpoint {
                     }
                 }
                 schedulePrompt();
-            ;}
+                ;
+            }
         });
     }
 
@@ -162,8 +164,12 @@ public class WebSocketFacade extends Endpoint {
         promptTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.print("\n" + Repl.getState() + " >>> ");
+                System.out.print(Repl.getState() + " >>> ");
             }
         }, 500);
+    }
+
+    public void redraw() {
+        System.out.println(parseChessBoard(colorPerspective, ClientState.getCurrentBoard()));
     }
 }

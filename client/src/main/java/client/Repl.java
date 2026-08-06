@@ -25,12 +25,12 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println(" Welcome to Chess. use 'help' for a list of commands.");
+        System.out.println("Welcome to Chess. use 'help' for a list of commands.");
         Scanner scanner = new Scanner(System.in);
         ClientResult result = new ClientResult("", null);
         while (!result.message().equals("quit")) {
             //Print prompt
-            System.out.print("\n" + state + " >>> ");
+            System.out.print("\n\n" + state + " >>> ");
             String line = scanner.nextLine();
             try {
                 switch (state) {

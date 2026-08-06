@@ -104,7 +104,7 @@ public class PreGameClient {
 
         int gameID = gameNumbering.get(gameNumber).gameID();
 
-        ChessGame.TeamColor colorToJoin = null;
+        ChessGame.TeamColor colorToJoin;
         if (params[1].equals("white")) {
             colorToJoin = ChessGame.TeamColor.WHITE;
         } else if (params[1].equals("black")) {

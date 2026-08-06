@@ -28,11 +28,22 @@ public class InGameClient {
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
                 case "leave" -> leave();
+                case "redraw" -> redraw();
+                case "highlight" -> highlightMoves(params);
                 default -> help();
             };
         } catch (Exception ex) {
             return new ClientResult(ex.getMessage(), null);
         }
+    }
+
+    private static ClientResult highlightMoves(String[] params) {
+
+    }
+
+    private static ClientResult redraw() {
+        webSocket.redraw();
+        return new ClientResult("", null);
     }
 
     private static ClientResult leave() throws IOException {
@@ -107,6 +118,13 @@ public class InGameClient {
     }
 
     private static ClientResult help() {
-        return new ClientResult("move start end. ex: A1 B4", null);
+        return new ClientResult("""
+                move {start} {end} - Make a move using the coordinate system. Ex: A2 D4
+                redraw - Reload the current board.
+                leave - Leave the game. Another user will be able to take your spot.
+                resign - Forfeit the game.
+                highlight {positon} - Shows legal moves for the piece at the given positon.
+                help - For a list of commands.
+                """, null);
     }
 }
