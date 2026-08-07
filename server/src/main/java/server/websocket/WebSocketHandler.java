@@ -57,14 +57,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if (!Objects.equals(authData.username(), gameData.whiteUsername()) && !Objects.equals(authData.username(), gameData.blackUsername())) {
             ErrorMessage errorMessage = new ErrorMessage("Only players can resign.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
         if (gameData.isGameOver()) {
             ErrorMessage message = new ErrorMessage("This game is already over, you can no longer resign.");
-            String json =  new Gson().toJson(message);
+            String json = new Gson().toJson(message);
             session.getRemote().sendString(json);
             return;
         }
@@ -99,7 +99,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if (authData == null) {
             ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
@@ -114,51 +114,51 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             enemyColor = ChessGame.TeamColor.WHITE;
         } else {
             ErrorMessage errorMessage = new ErrorMessage("Only players can make moves.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
-        if (gameData.isGameOver()){
+        if (gameData.isGameOver()) {
             ErrorMessage errorMessage = new ErrorMessage("This game is over.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
         if (game.getBoard().getPiece(startPosition) == null) {
             ErrorMessage errorMessage = new ErrorMessage("There is no piece at that starting position.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
         if (!game.validMoves(startPosition).contains(move)) {
             ErrorMessage errorMessage = new ErrorMessage("That Move is not valid.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
-        
-        if (teamColor == null){
+
+        if (teamColor == null) {
             ErrorMessage errorMessage = new ErrorMessage("Observers cannot make moves.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
         if (piece.getTeamColor() != teamColor) {
             ErrorMessage errorMessage = new ErrorMessage("You can only move your pieces.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
-        try{
+        try {
             game.makeMove(move);
-        } catch  (InvalidMoveException e) {
+        } catch (InvalidMoveException e) {
             ErrorMessage errorMessage = new ErrorMessage(e.getMessage());
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
@@ -174,16 +174,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.getPieceType().toString().toLowerCase() + " to " + colChar + row);
         ConnectionManager.broadcast(gameID, authData.username(), notification);
 
-        if (game.isInCheckmate(enemyColor)){
+        if (game.isInCheckmate(enemyColor)) {
             NotificationMessage mateNotification = new NotificationMessage(enemyColor + " is in CheckMate! " + teamColor + " Wins!!");
             ConnectionManager.broadcast(gameID, null, mateNotification);
             gameDAO.setGameOver(gameID);
-        }
-        else if (game.isInCheck(enemyColor)){
+        } else if (game.isInCheck(enemyColor)) {
             NotificationMessage checkNotification = new NotificationMessage(enemyColor + " is in Check!");
             ConnectionManager.broadcast(gameID, null, checkNotification);
-        }
-        else if (game.isInStalemate(enemyColor)){
+        } else if (game.isInStalemate(enemyColor)) {
             NotificationMessage staleNotification = new NotificationMessage(enemyColor + " has no viable moves. Stalemate! It's a tie.");
             ConnectionManager.broadcast(gameID, null, staleNotification);
             gameDAO.setGameOver(gameID);
@@ -196,14 +194,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if (game == null) {
             ErrorMessage errorMessage = new ErrorMessage("Game #" + gameId + " does not exist.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
 
         if (authData == null) {
             ErrorMessage errorMessage = new ErrorMessage("Unrecognized user.");
-            String json =  new Gson().toJson(errorMessage);
+            String json = new Gson().toJson(errorMessage);
             session.getRemote().sendString(json);
             return;
         }
@@ -223,6 +221,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else {
             role = "Observer";
         }
+
         NotificationMessage notification = new NotificationMessage(authData.username() + " has Joined as " + role);
         ConnectionManager.broadcast(gameId, authData.username(), notification);
     }
@@ -231,6 +230,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void handleClose(WsCloseContext ctx) {
         System.out.println("Websocket closed");
     }
+}
 
 //    private void enter(String visitorName, Session session) throws IOException {
 //        connections.add(session);
@@ -245,4 +245,3 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 //        connections.broadcast(session, notification);
 //        connections.remove(session);
 //    }
-}

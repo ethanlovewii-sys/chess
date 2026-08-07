@@ -63,16 +63,10 @@ public class GameService {
             if (gameData.whiteUsername() != null) {
                 throw new ResponseException("Error: already taken", 403);
             }
-            if (authData.username().equals(gameData.blackUsername())){
-                throw new ResponseException("Error: Cannot join both sides of a game.", 400);
-            }
         }
         if (request.playerColor().equals(ChessGame.TeamColor.BLACK)) {
             if (gameData.blackUsername() != null) {
                 throw new ResponseException("Error: already taken", 403);
-            }
-            if (authData.username().equals(gameData.whiteUsername())){
-                throw new ResponseException("Error: Cannot join both sides of a game.", 400);
             }
         }
         gameDAO.addPlayer(gameData.gameID(), authData.username(), request.playerColor());
