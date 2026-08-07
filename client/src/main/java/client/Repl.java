@@ -53,8 +53,4 @@ public class Repl {
     public static String getState() {
         return state;
     }
-
-    public void printPrompt() {
-        System.out.print("\n" + state + " >>> ");
-    }
 }

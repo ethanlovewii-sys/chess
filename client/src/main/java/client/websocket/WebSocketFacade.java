@@ -80,7 +80,9 @@ public class WebSocketFacade extends Endpoint {
         session.getBasicRemote().sendText(gson.toJson(command));
     }
 
-    private static String parseChessBoard(ChessGame.TeamColor colorPerspective, ChessBoard board, Collection<String> highlights, String highlightPiece) {
+    private static String parseChessBoard(
+            ChessGame.TeamColor colorPerspective, ChessBoard board, Collection<String> highlights, String highlightPiece
+    ) {
         StringBuilder stringBoard = new StringBuilder();
 
         stringBoard.append(SET_BG_COLOR_LIGHT_GREY).append(EMPTY);
@@ -193,8 +195,8 @@ public class WebSocketFacade extends Endpoint {
             int col = move.getEndPosition().getColumn();
             highlightCoordinates.add("" + row + col);
         }
-        System.out.println(parseChessBoard(ClientState.getGameColor(), ClientState.getCurrentGame().getBoard(), highlightCoordinates, pieceCoordinate));
-        //here i could make a list of the coordinates to highlight then send it into the parser and have the parser check if
-        //each spot is in the list then color it magenta if it it.
+        System.out.println(
+                parseChessBoard(ClientState.getGameColor(), ClientState.getCurrentGame().getBoard(), highlightCoordinates, pieceCoordinate)
+        );
     }
 }

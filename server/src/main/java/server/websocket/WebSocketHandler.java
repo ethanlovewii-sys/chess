@@ -90,7 +90,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ConnectionManager.broadcast(gameID, authData.username(), notification);
     }
 
-    private void makeMove(Session session, ChessMove move, String authToken, int gameID) throws ResponseException, IOException, InvalidMoveException, DataAccessException {
+    private void makeMove(Session session, ChessMove move, String authToken, int gameID) throws ResponseException, IOException, DataAccessException {
         ChessPosition startPosition = move.getStartPosition();
         GameData gameData = gameDAO.getGame(gameID);
         AuthData authData = authDAO.getAuthData(authToken);
@@ -171,7 +171,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         int row = endPosition.getRow();
         int column = endPosition.getColumn();
         char colChar = (char) ('A' + column - 1);
-        NotificationMessage notification = new NotificationMessage(authData.username() + " moved " + piece.getPieceType().toString().toLowerCase() + " to " + colChar + row);
+        NotificationMessage notification = new NotificationMessage(
+                authData.username() + " moved " + piece.getPieceType().toString().toLowerCase() + " to " + colChar + row
+        );
         ConnectionManager.broadcast(gameID, authData.username(), notification);
 
         if (game.isInCheckmate(enemyColor)) {
@@ -231,17 +233,3 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 }
-
-//    private void enter(String visitorName, Session session) throws IOException {
-//        connections.add(session);
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(session, notification);
-//    }
-//
-//    private void exit(String visitorName, Session session) throws IOException {
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(session, notification);
-//        connections.remove(session);
-//    }
