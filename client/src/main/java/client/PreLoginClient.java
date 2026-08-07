@@ -26,7 +26,8 @@ public class PreLoginClient {
                 case "register" -> register(params);
                 case "quit" -> new ClientResult("quit", null);
                 case "help" -> help();
-                default -> new ClientResult("Unrecognized Command: " + cmd + ". Type \"help\" for a list of available commands.", null);
+                default ->
+                        new ClientResult("Unrecognized Command: " + cmd + ". Type \"help\" for a list of available commands.", null);
             };
         } catch (Exception ex) {
             return new ClientResult(ex.getMessage(), null);
@@ -48,7 +49,6 @@ public class PreLoginClient {
         }
         RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
         ClientState.setAuthToken(result.authToken());
-        ClientState.setUsername(result.username());
         return new ClientResult("Registered new user:" + result.username(), "LoggedIn");
     }
 
@@ -58,7 +58,6 @@ public class PreLoginClient {
         }
         LoginResult result = server.login(new LoginRequest(params[0], params[1]));
         ClientState.setAuthToken(result.authToken());
-        ClientState.setUsername(result.username());
         return new ClientResult("Logged in user:" + result.username(), "LoggedIn");
     }
 }

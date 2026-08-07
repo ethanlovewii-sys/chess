@@ -10,9 +10,11 @@ import request.*;
 import result.*;
 import exception.ResponseException;
 import sharedserver.ServerFacade;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import static ui.EscapeSequences.*;
 
 public class PreGameClient {
@@ -94,7 +96,7 @@ public class PreGameClient {
 
     private static ClientResult joinGame(String[] params) throws Exception {
         if (params.length < 2) {
-            return new ClientResult("Must include the game number and what color you'd like to be.",  null);
+            return new ClientResult("Must include the game number and what color you'd like to be.", null);
         }
         int gameNumber = 0;
         try {

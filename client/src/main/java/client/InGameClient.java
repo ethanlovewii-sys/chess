@@ -14,7 +14,7 @@ public class InGameClient {
     private static WebSocketFacade webSocket = null;
 
     public InGameClient(WebSocketFacade webSocket) {
-        this.webSocket = webSocket;
+        InGameClient.webSocket = webSocket;
     }
 
     public static ClientResult eval(String input) {
@@ -145,9 +145,9 @@ public class InGameClient {
 
         ChessMove move = new ChessMove(start, end, null);
 
-        try{
+        try {
             webSocket.makeMove(ClientState.getGameID(), move);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new ClientResult(e.getMessage(), null);
         }
 

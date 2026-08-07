@@ -10,6 +10,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import client.Repl;
 import websocket.messages.*;
+
 import static ui.EscapeSequences.*;
 
 import java.io.IOException;
@@ -108,9 +109,8 @@ public class WebSocketFacade extends Endpoint {
                 String coordinate = "" + boardRow + boardCol;
                 if (coordinate.equals(highlightPiece)) {
                     stringBoard.append(SET_BG_COLOR_SOFT_YELLOW);
-                }
-                else if ((row + col) % 2 == 0) {
-                    if (highlights != null && highlights.contains(coordinate)){
+                } else if ((row + col) % 2 == 0) {
+                    if (highlights != null && highlights.contains(coordinate)) {
                         stringBoard.append(SET_BG_COLOR_SOFT_GREEN);
                     } else {
                         stringBoard.append(SET_BG_COLOR_WHITE);
@@ -153,12 +153,18 @@ public class WebSocketFacade extends Endpoint {
             return EMPTY;
         }
         return switch (piece.getPieceType()) {
-            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_PAWN : SET_TEXT_COLOR_RED + BLACK_PAWN;
-            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_KNIGHT : SET_TEXT_COLOR_RED + BLACK_KNIGHT;
-            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_BISHOP : SET_TEXT_COLOR_RED + BLACK_BISHOP;
-            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_ROOK : SET_TEXT_COLOR_RED + BLACK_ROOK;
-            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_QUEEN : SET_TEXT_COLOR_RED + BLACK_QUEEN;
-            case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_KING : SET_TEXT_COLOR_RED + BLACK_KING;
+            case PAWN ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_PAWN : SET_TEXT_COLOR_RED + BLACK_PAWN;
+            case KNIGHT ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_KNIGHT : SET_TEXT_COLOR_RED + BLACK_KNIGHT;
+            case BISHOP ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_BISHOP : SET_TEXT_COLOR_RED + BLACK_BISHOP;
+            case ROOK ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_ROOK : SET_TEXT_COLOR_RED + BLACK_ROOK;
+            case QUEEN ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_QUEEN : SET_TEXT_COLOR_RED + BLACK_QUEEN;
+            case KING ->
+                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_BLUE + BLACK_KING : SET_TEXT_COLOR_RED + BLACK_KING;
         };
     }
 

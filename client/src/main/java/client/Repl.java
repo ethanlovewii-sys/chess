@@ -14,7 +14,7 @@ public class Repl {
     private final PreGameClient preGameClient;
     private final InGameClient inGameClient;
     private ServerFacade server;
-    private WebSocketFacade  webSocket;
+    private WebSocketFacade webSocket;
 
     public Repl(String serverUrl) throws Exception {
         server = new ServerFacade(serverUrl);
@@ -50,7 +50,7 @@ public class Repl {
         System.out.println();
     }
 
-    public static String getState(){
+    public static String getState() {
         return state;
     }
 
